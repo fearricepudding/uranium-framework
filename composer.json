@@ -1,0 +1,6 @@
+{
+    "require": {
+        "vlucas/phpdotenv": "^3.6",
+        "daveearley/daves-email-validation-tool": "^0.1.15"
+    }
+}
