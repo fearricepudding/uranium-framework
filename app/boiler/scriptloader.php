@@ -1,7 +1,7 @@
 <?php
-namespace dark\boiler;
+namespace uranium\boiler;
 
-use dark\boiler\dbg;
+use uranium\boiler\dbg;
 
 class scriptloader{
 	public static function file($FILEPATH = ""){

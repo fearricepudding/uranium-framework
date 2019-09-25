@@ -1,6 +1,6 @@
 <?php
 
-namespace dark\bootstrap;
+namespace uranium\bootstrap;
 
 class templateHandler{
 

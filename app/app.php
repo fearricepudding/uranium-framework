@@ -3,7 +3,7 @@
 // Boilerplate
 require_once(__DIR__."/boiler/scriptloader.php");
 
-use dark\boiler\scriptloader;
+use uranium\boiler\scriptloader;
 
 scriptloader::file(__DIR__."/../vendor/autoload.php");
 

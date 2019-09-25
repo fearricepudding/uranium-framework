@@ -1,5 +1,5 @@
 <?php
-namespace dark\boiler;
+namespace uranium\boiler;
 
 class dbg{
     public static function log($MESSAGE, $IDENTIFY = "unset"){

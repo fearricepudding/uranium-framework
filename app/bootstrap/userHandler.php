@@ -1,30 +1,39 @@
 <?php
 
-namespace dark\bootstrap;
+namespace uranium\bootstrap;
 
-use dark\config\db;
+use uranium\config\db;
 use EmailValidation\EmailValidatorFactory as emailValidator;
-use dark\boiler\enc;
+use uranium\boiler\enc;
+use \PDO;
 
 class userHandler{
 
-	public static $uid = "";
-	public static $username = "";
-	public static $session = false;
-	public static $USERNAME_MIN_LENGTH = 4;
-	public static $PASSWORD_MIN_LENGTH = 6;
-	public static $message = "";
+	public $uid = "";
+	public $username = "";
+	public $email = "";
+	private static $session = false;
+	private static $USERNAME_MIN_LENGTH = 4;
+	private static $PASSWORD_MIN_LENGTH = 6;
+	public $message = "";
 
-	function __construct(){
+	function __construct($uid=NULL){
 		@session_start();
-		if(isset($_SESSION['uid'])){
-			self::$session = true;
-			self::$uid = $_SESSION['uid'];
-		};
+		if($uid !== NULL){
+			$this->uid = $uid;
+			$this->getUserData();
+		}else{
+			if(isset($_SESSION['uid'])){
+				self::$session = true;
+				$this->uid = $_SESSION['uid'];
+				$this->getUserData();
+			};
+		}
 	}
 		
 	public static function status(){
-		if(self::$session){
+		@session_start();
+		if(isset($_SESSION['uid'])){
 			return true;
 		};
 		return false;		
@@ -38,11 +47,11 @@ class userHandler{
 		if(strlen($password) < self::$PASSWORD_MIN_LENGTH){
 			self::$message = "password too short";
 			return false;
-		}
-		if(!self::checkEmail($email)['valid_format']){
+		};
+		if(!self::validateEmail($email)['valid_format']){
 			self::$message = "email invalid";
 			return false;	
-		}
+		};
 		$conn = db::getInstance();
 		$hashedPassword = password_hash($password, PASSWORD_DEFAULT, ['cost'=>getenv("password_cost")]);
 		try{
@@ -53,20 +62,49 @@ class userHandler{
 		}catch(\PDOException $e){
 			$conn->rollBack();
 			return false;
-		}
+		};
 	}
 
 	public static function loginUser($username="", $password=""){
-		$conn = db::getInstance();
-		$query = $conn->query("SELECT username, password, active FROM `users` WHERE `username`='$username' OR `email`='$username'", \PDO::FETCH_ASSOC);
-		$user = $query->fetch();
-		if(password_verify($password, $user['password'])){
-			
+		if(!self::status()){
+			$conn = db::getInstance();
+			$query = $conn->query("SELECT id, username, password, active FROM `users` WHERE `username`='$username' OR `email`='$username'", PDO::FETCH_ASSOC);
+			$user = $query->fetch();
+			if(password_verify($password, $user['password'])){
+				if(getenv("require_activation") && ($user['active'] == false)){
+					return false;
+				};
+				$_SESSION['uid']=$user['id'];
+				return true;
+			};
+			return false;
 		};
-		return false;
+		return true;
 	}
 
-	public static function checkEmail($email){
+	public static function logoutUser(){
+		if(self::status()){
+			$_SESSION['uid'] = "";
+			session_destroy();
+		}
+		return true;
+	}
+
+	private function getUserData(){
+		$conn = db::getInstance();
+		$uid = $this->uid;
+		try{
+			$query = $conn->query("SELECT id, email, username, active FROM `users` WHERE `id`='$uid'", PDO::FETCH_ASSOC);
+			$user = $query->fetch();
+			$this->username = $user['username'];
+			$this->email = $user['email'];
+		}catch(PDOException $e){
+			error_log($e);
+			return false;
+		}
+	}
+
+	public static function validateEmail($email){
 		$validator = emailValidator::create($email);
 		return $validator->getValidationResults()->asArray();
 	}	

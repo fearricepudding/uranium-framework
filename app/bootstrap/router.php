@@ -1,5 +1,5 @@
 <?php
-namespace dark\bootstrap;
+namespace uranium\bootstrap;
 
 class router extends \routes{
 

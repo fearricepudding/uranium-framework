@@ -1,6 +1,6 @@
 <?php
 
-namespace dark\config;
+namespace uranium\config;
 
 use \PDO;
 

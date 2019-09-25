@@ -1,7 +1,7 @@
 <?php
-namespace dark\bootstrap;
+namespace uranium\bootstrap;
 
-use dark\bootstrap\templateHandler;
+use uranium\bootstrap\templateHandler;
 
 class pageHandler{
     
