@@ -11,6 +11,6 @@ class routes{
     	"/user" => "exampleController@userexample",
 		"/test/{item_test}" => "exampleController@variableExample",
 		"/test/{item_test}/test" => "exampleController@variableExtension",
-		"/test/{item_test}/test/{second_item}" => "exampleController@twoVariables"
+		"/test/{item_test}/test/{seconditem}" => "exampleController@twoVariables"
     ];
 }

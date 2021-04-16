@@ -43,7 +43,8 @@ class router extends \routes{
 						if(!$variableMatch){
 							unset($matches[$route]);
 						}else{
-							$variables[] = substr($routeComps[$level], 1, strlen($routeComps[$level]) -2);
+							$variableID = substr($routeComps[$level], 1, strlen($routeComps[$level]) -2); 
+							$variables[$variableID] = $URIComp;
 						};
 					};
 				};
