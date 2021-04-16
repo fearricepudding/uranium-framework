@@ -25,4 +25,16 @@ class exampleController{
 		//var_dump(userHandler::loginUser("jordan", "password"));
 
 	}
+	public static function variableExample($variables){
+		echo "One Variable";
+		var_dump($variables);
+	}
+	public static function variableExtension($variable){
+		echo "Variable Extension";
+		var_dump($variable);
+	}
+	public static function twoVariables($variables){
+		echo "Two variables <br />";
+		var_dump($variables);
+	}
 }	

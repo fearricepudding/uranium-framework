@@ -3,11 +3,8 @@ namespace uranium\bootstrap;
 
 class router extends \routes{
 
-    private static $URI = "";
-
     public static function init(){
-        self::$URI = $_SERVER['REQUEST_URI'];
-        $route = self::getRoute(self::$URI);
+        $route = self::getRoute();
         if($route){
             self::loadRoute($route["route"], $route['variables']);
         }else{
@@ -15,59 +12,52 @@ class router extends \routes{
         }
     }
 
-    private static function getRoute($URI){
-        if(array_key_exists($URI, self::$routes)){
-            return ["route"=>self::$routes[$URI], "variables"=>[]];
-            return true;
-        }else{
-            $splitURI = explode("/", $URI);
-            $level = 1;
-            $variables = [];
-            $catches = [];
-            foreach(self::$routes as $route=>$item){
-                $splitRoute = explode("/",$route);
-                $check = $splitURI[$level];
-                if(array_key_exists($level, $splitRoute)){
-                    if(preg_match("/\{[a-zA-Z]+\}/",$splitRoute[$level])){
-                        $variables[] = $check;
-                        $catches[] = $route;
-                    }else{
-                        if($check === $splitRoute[$level]){
-                            $catches[] = $route;
-                        }
-                        
-                    }
-                }
-            }
-            $level++;
-            for($i=2;$i < count($splitURI);$i++){
-                $previousCatches = $catches;
-                $catches = [];
-                foreach($previousCatches as $route){
-                    $splitRoute = explode("/",$route);
-                    if(array_key_exists($level, $splitURI)){
-                        $check = $splitURI[$level];
-                        if(array_key_exists($level, $splitRoute)){
-                            if(preg_match("/\{[a-zA-Z]+\}/",$splitRoute[$level])){
-                                $variables[$route][substr($splitRoute[$level], 1, (strlen($splitRoute[$level])-2))] = $check;
-                                $catches[] = $route;
-                            }else{
-                                if($check === $splitRoute[$level]){
-                                    $catches[] = $route;
-                                }
-                            }
-                        
-                        }
-                    }
-                }
-                $level++;
-            }
-            if(count($catches) !== 1){
-                return false;
-            }else{
-                return ["route"=>self::$routes[$catches[0]], "variables"=>$variables[$route]];
-            }
-        }
+    private static function getRoute(){
+		$URI = $_SERVER['REQUEST_URI'];
+		$URIComps = explode("/", $URI);
+		if($URIComps[0] == ""){
+			$URIComps = array_slice($URIComps, 1); // Remove first empty item
+		};
+		$compSize = count($URIComps);
+		if($URIComps[$compSize-1] == ""){
+			unset($URIComps[$compSize-1]); // Remove last if last is empty
+			$compSize -= 1;
+		}
+		$matches = self::$public_routes;
+		$variables = [];
+		$level = 0; 
+		foreach($URIComps as $URIComp){
+			foreach(self::$public_routes as $route=>$controller){
+				$routeComps = explode("/", $route); 
+				if($routeComps[0] == ""){
+					$routeComps = array_slice($routeComps, 1); // Remove empty array item
+				};
+				$routeSize = count($routeComps);
+				if($compSize != $routeSize){
+					unset($matches[$route]);
+				}else{
+					// Check if variable
+					$variableMatch = preg_match("/\{([a-zA-Z_]+)\}/", $routeComps[$level], $variableMatch);
+					// Match
+					if($routeComps[$level] != $URIComp){
+						if(!$variableMatch){
+							unset($matches[$route]);
+						}else{
+							$variables[] = substr($routeComps[$level], 1, strlen($routeComps[$level]) -2);
+						};
+					};
+				};
+			};
+			$level += 1;
+		};
+		if(count($matches) > 0){
+			return [
+				"route" 	=> array_pop($matches),
+				"variables" => $variables
+			];
+		}else{
+			return false;
+		};
     }
 
     private static function loadRoute($routeID, $variables=[]){
