@@ -1,6 +1,6 @@
 <?php
 
-namespace uranium\config;
+namespace uranium\database;
 
 use \PDO;
 

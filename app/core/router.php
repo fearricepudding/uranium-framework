@@ -1,5 +1,5 @@
 <?php
-namespace uranium\bootstrap;
+namespace uranium\core;
 
 class router extends \routes{
 
@@ -19,14 +19,13 @@ class router extends \routes{
 			$URIComps = array_slice($URIComps, 1); // Remove first empty item
 		};
 		$compSize = count($URIComps);
-		if($URIComps[$compSize-1] == ""){
-			unset($URIComps[$compSize-1]); // Remove last if last is empty
-			$compSize -= 1;
-		}
 		$matches = self::$public_routes;
 		$variables = [];
 		$level = 0; 
 		foreach($URIComps as $URIComp){
+			if($level > 0 && $URIComp == ""){
+				break;	
+			}
 			foreach(self::$public_routes as $route=>$controller){
 				$routeComps = explode("/", $route); 
 				if($routeComps[0] == ""){

@@ -1,13 +1,19 @@
 <?php
 
-use uranium\bootstrap\pageHandler;
-use uranium\bootstrap\userHandler;
-
+use uranium\core\pageHandler;
+use uranium\core\userHandler;
+use uranium\core\encryptionEngine;
+use uranium\model\exampleModel;
 
 class exampleController{
+	
 	public static function examplepage(){
-		pageHandler::view("example");
+
+		$test = new exampleModel();
+		$test->create();
+		//pageHandler::view("example");
 	}
+
 	public static function userexample(){
 		$user = new userHandler();
 		if($user::status()){
@@ -21,8 +27,6 @@ class exampleController{
 			echo 'No login';
 		}
 		
-		//var_dump(userHandler::logoutUser());
-		//var_dump(userHandler::loginUser("jordan", "password"));
 
 	}
 	public static function variableExample($variables){

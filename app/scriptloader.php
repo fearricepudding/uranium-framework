@@ -1,7 +1,5 @@
 <?php
-namespace uranium\boiler;
-
-use uranium\boiler\dbg;
+namespace uranium;
 
 class scriptloader{
 	public static function file($FILEPATH = ""){

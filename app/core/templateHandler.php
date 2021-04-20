@@ -1,6 +1,6 @@
 <?php
 
-namespace uranium\bootstrap;
+namespace uranium\core;
 
 class templateHandler{
 

@@ -1,7 +1,7 @@
 <?php
-namespace uranium\bootstrap;
+namespace uranium\core;
 
-use uranium\bootstrap\templateHandler;
+use uranium\core\templateHandler;
 
 class pageHandler{
     
@@ -20,6 +20,11 @@ class pageHandler{
             error_log("Template not found");
         }
     }
+
+	public static function redirect($location){
+		header("Location: ".$location);
+		exit();
+	}
    
     public static function render($PAGEDATA){
         echo $PAGEDATA;
