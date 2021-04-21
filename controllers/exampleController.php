@@ -10,7 +10,7 @@ class exampleController{
 	public static function examplepage(){
 
 		$test = new exampleModel();
-		$test->create();
+		echo $test->exists();
 		//pageHandler::view("example");
 	}
 

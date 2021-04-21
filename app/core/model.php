@@ -50,6 +50,9 @@ END;
 
 	public function create(){
 		$tableName = $this->tableName;
+		if($this->exists()){
+			return false;
+		}
 		$template = <<<EOD
 			CREATE TABLE $tableName(
 EOD;
@@ -79,5 +82,19 @@ EOD;
 		// execute command
 
 		// rollback if error
+	}
+
+	public static function exists(){
+		$database = db::getInstance();
+		$query = $database->prepare("DESCRIBE ".$this->tableName);
+		if(!$query->execute()){
+			// There was an issue getting the table
+			return false;
+		};
+		return true;
+	}
+
+	public static function drop(){
+		
 	}
 }

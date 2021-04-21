@@ -10,13 +10,19 @@ class db {
 	private function __clone() {}
 	public static function getInstance() {
 		if(!self::$objInstance){
-			$db_host = getenv("db_hostname");
-			$db_name = getenv("db_name");	
-			self::$objInstance = new PDO("mysql:host=$db_host;dbname=$db_name", getenv("db_username"), getenv("db_password"));
-        		self::$objInstance->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+			$db_host = $_ENV["db_hostname"];
+			$db_name = $_ENV["db_name"];	
+			//echo phpInfo();
+			$dsn = "mysql:dbname=$db_name;host=$db_host";
+			//echo phpInfo();
+			self::$objInstance = new PDO($dsn, $_ENV["db_username"], $_ENV["db_password"]);
+        	self::$objInstance->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        	
+        	//exit;
 		}
-        	return self::$objInstance;
+        return self::$objInstance;
 	}
+
 	final public static function __callStatic( $chrMethod, $arrArguments ) {
 		$objInstance = self::getInstance();
 		return call_user_func_array(array($objInstance, $chrMethod), $arrArguments);
