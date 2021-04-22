@@ -10,7 +10,6 @@ class exampleModel extends model{
 	public function __construct(){
 		$this->addPrimary("id");
 		$this->addCol("test", databaseDataTypes::VARCHAR, 50);
-		//var_dump($this->cols);
 	}
 
 	protected $tableName = "exampleModel";

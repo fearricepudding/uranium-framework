@@ -84,7 +84,7 @@ EOD;
 		// rollback if error
 	}
 
-	public static function exists(){
+	public function exists(){
 		$database = db::getInstance();
 		$query = $database->prepare("DESCRIBE ".$this->tableName);
 		if(!$query->execute()){

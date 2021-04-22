@@ -10,7 +10,11 @@ class exampleController{
 	public static function examplepage(){
 
 		$test = new exampleModel();
-		echo $test->exists();
+		try{
+			echo $test->create();
+		}catch(PDOException $e){
+			echo "Failure";
+		}
 		//pageHandler::view("example");
 	}
 
