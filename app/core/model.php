@@ -8,6 +8,7 @@
 namespace uranium\core;
 
 use uranium\database\db;
+use \PDO;
 
 class databaseDataTypes{
 	public const VARCHAR = ["ID" => "VARCHAR"];
@@ -16,43 +17,116 @@ class databaseDataTypes{
 
 class model extends databaseDataTypes{
 	protected $cols = [];
+	public $rows = [];
 	protected $tableName;
+	protected $pkn;
 	
-	protected function save(){
-		// save model
-	}	
-
 	protected function addPrimary($name){
+		$this->pkn = $name;
 		$this->cols[] = [
 			"name"=> $name,
 			"type"=> databaseDataTypes::INTEGER,
 			"constraint" => "PK",
-			"length" => 10
+			"length" => 10,
+			"default" => "AUTO_INCREMENT",
+			"null" => true
 		];
 	}
 	
-	protected function addCol($name, $type, $length=10, $default=false){
+	protected function addCol($name, $type, $length=10, $default=false, $null=false){
 		$this->cols[] = [
 			"name"=> $name,
 			"type"=> $type,
 			"length"=> $length,
 			"default" => $default?$default:"",
-			"constraint" => false
+			"constraint" => false,
+			"null" => $null
 		];
 	}
 
-	public function get(){
+	/**
+	 * Fetch item in database
+	 * @param $iid - pk value of item to fetch
+	 *
+	 * TODO: Allow array of IDS to fetch
+	 */
+	public function get($iid=false){
 		$tableName = $this->tableName;
-		$template = <<<END
-			SELECT * FROM $tableName
-END;
+		$database = db::getInstance();
+		$sql = "SELECT * FROM $tableName";
+		if($iid){
+			$pkn = $this->pkn;
+			$sql .= " WHERE `$pkn`='$iid'";
+		}
+		$query = $database->prepare($sql);
+		if($query->execute()){
+			while($row = $query->fetch(PDO::FETCH_ASSOC)){
+				$this->rows[] = $row;
+			}
+			return true;
+		}else{
+			return false;
+		};
 	}
-
-	public function create(){
+ 
+	public function save(){
+		if(count($this->rows) <= 0){
+			return;
+		};
+		$pkn = $this->pkn;
 		$tableName = $this->tableName;
-		if($this->exists()){
+		$database = db::getInstance();
+		$database->beginTransaction();
+		foreach($this->rows as $row){
+			$template = "";
+			if(array_key_exists($pkn, $row)){
+				// pk is set and exists in db
+				$template = "UPDATE `$tableName` SET ";
+				foreach($this->cols as $col){
+					if(array_key_exists($col["name"], $row)){
+						$currentKey = $col["name"];
+						$currentValue = $row[$col["name"]];
+						$template .= "`$currentKey`='$currentValue',";
+					}
+				}
+				$template = substr($template, 0, -1);
+				$currentPK = $row[$pkn];
+				$template .= " WHERE `$pkn`='$currentPK'";
+			}else{
+				$values = "";
+				$template = "INSERT INTO `$tableName` (";
+				foreach($this->cols as $col){
+					if($col["constraint"] != "PK"){
+						if(array_Key_exists($col["name"], $row)){
+							$currentKey = $col["name"];
+							$currentValue = $row[$col["name"]];
+							$template .= "`$currentKey`,";
+							$values .= "'$currentValue',";
+						}
+					}
+				}
+				$template = substr($template, 0, -1); // Remove the final comma from keys
+				$values = substr($values, 0, -1); // And on values
+				$template .= ") VALUES (".$values.");";
+			}
+			$database->exec($template);
+			echo "<br />";
+		}
+		try{
+			$database->commit();
+			return true;
+		}catch(PDOException $e){
+			$database->rollBack();
+			echo "Rollback";
 			return false;
 		}
+	}
+	
+	/**
+	 * Crete the table in the database
+	 */
+	public function create(){
+		$tableName = $this->tableName;
 		$template = <<<EOD
 			CREATE TABLE $tableName(
 EOD;
@@ -61,27 +135,29 @@ EOD;
 			if($col["constraint"] === "PK"){
 				$pkName = $col["name"];
 			}
+			$null = $col["null"]?"NOT NULL":"";
 			$name = $col["name"];
 			$type = $col["type"]["ID"];
 			$length = $col["length"];
+			$default = $col["default"];
 			$template .= <<<EOD
-				$name $type($length),
+				$name $type($length) $null $default,
 EOD;
 	
 		}
 		$template .= "PRIMARY KEY(".$pkName.")";
 		$template .= ")";
-		// Check data valid
-
-		echo $template;
-
-		// create command
 
 		// get db instance
-
+		$database = db::getInstance();
 		// execute command
-
+		$query = $database->prepare($template);
 		// rollback if error
+		if($query->execute()){
+			return true;
+		}else{
+			return false;
+		}
 	}
 
 	public function exists(){
@@ -94,7 +170,15 @@ EOD;
 		return true;
 	}
 
-	public static function drop(){
-		
+	public function drop(){
+		$database = db::getInstance();
+		$tableName = $this->tableName;
+		$sql = "DROP TABLE IF EXISTS `$tableName`;";
+		$query = $database->prepare($sql);
+		if($query->execute()){
+			return true;
+		}else{
+			return false;
+		};
 	}
 }

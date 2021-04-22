@@ -11,8 +11,27 @@ class exampleController{
 
 		$test = new exampleModel();
 		try{
-			echo $test->create();
+		//	echo "Dropping table... <br />";
+			//$test->drop();
+		//	echo "Creating table... <br />";
+			//$test->create();
+		//	echo "Getting values... <br />";
+		//	$test->get();
+		//	//		var_dump($test->rows);
+		//	foreach($test->rows as $value){
+		//		var_dump($value);
+		//		echo "<br />";
+		//	}
+		//	echo "<br />Setting new value... <br />";
+		//	$newRow=[];
+		//	$newRow["test"] = "example manya";
+		//	$newRow["name"] = "Someone";
+
+		//	$test->rows[] = $newRow; 
+		//	$test->rows[1]["name"] = "Modified Name";
+		//	$test->save();
 		}catch(PDOException $e){
+			echo $e;
 			echo "Failure";
 		}
 		//pageHandler::view("example");
