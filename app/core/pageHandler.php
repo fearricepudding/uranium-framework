@@ -10,8 +10,8 @@ class pageHandler{
     }
 
     public static function view($VIEWNAME, $VARIABLES=[]){
-        if(templateHandler::getContent($VIEWNAME)){
-            $content = templateHandler::getContent($VIEWNAME);
+        $content = templateHandler::getContent($VIEWNAME);
+        if($content){
             $pageData = templateHandler::updateData($content, $VARIABLES);
             $inTemplate = templateHandler::renderTemplate($pageData);
             self::render($inTemplate); 

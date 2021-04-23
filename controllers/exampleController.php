@@ -34,7 +34,7 @@ class exampleController{
 			echo $e;
 			echo "Failure";
 		}
-		//pageHandler::view("example");
+		pageHandler::view("example", ["test"=>"example"]);
 	}
 
 	public static function userexample(){
