@@ -7,13 +7,17 @@ class templateHandler{
     private static $viewpath = __DIR__."/../../views/";
     private static $templateDir = __DIR__."/../../views/templates/";
 
-    public static function getContent($VIEWNAME){
+    public static function getContent($VIEWNAME, $VARIABLES){
         $viewpath = self::$viewpath;
         $file = $viewpath.$VIEWNAME.'.view.php';
         if(!file_exists($file)){
             return false;
         }
-        $viewContent = file_get_contents($file);
+        extract($VARIABLES);
+        ob_start();
+        include($file);
+        $viewContent=ob_get_contents(); 
+        ob_end_clean();
         return $viewContent;
     }
 
