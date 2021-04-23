@@ -1,0 +1,7 @@
+<?php
+
+require __DIR__."/app/app.php";
+use uranium\scriptloader;
+scriptloader::folder(__DIR__."/app/cli");
+
+$cmdHandler = new cliCommandHandler($argv);
