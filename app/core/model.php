@@ -110,14 +110,12 @@ class model extends databaseDataTypes{
 				$template .= ") VALUES (".$values.");";
 			}
 			$database->exec($template);
-			echo "<br />";
 		}
 		try{
 			$database->commit();
 			return true;
 		}catch(PDOException $e){
 			$database->rollBack();
-			echo "Rollback";
 			return false;
 		}
 	}
@@ -160,6 +158,7 @@ EOD;
 		}
 	}
 
+	// TODO: Throws an error if the table doesnt exist, want to just return
 	public function exists(){
 		$database = db::getInstance();
 		$query = $database->prepare("DESCRIBE ".$this->tableName);

@@ -1,0 +1,31 @@
+Model:
+  ☐ Realationships
+    ☐ One to One 
+    ☐ One to Many
+    ☐ Many to One
+  ☐ Add all data types
+  ☐ Add filtering options to get
+  ☐ Allow default date on create / update
+  ☐ Fix checking if table exists
+
+Views:
+  ☐ Handle page errors
+    ☐ 404
+    ☐ 500
+    ☐ 501
+  ☐ Handle Uranium errors
+
+Controllers:
+
+CLI:
+  ☐ Command Handler
+    ☐ Output formatting
+    ☐ Read & register command scripts
+    ☐ Command domain grouping (seperated by .)
+  ☐ Debug commands
+  ☐ Application management commands
+    ☐ Database management
+      ☐ Drop tables
+      ☐ Create tables
+      ☐ update tables with modified model
+      ☐ verify database integrity

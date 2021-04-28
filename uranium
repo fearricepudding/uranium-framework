@@ -1,7 +1,9 @@
 <?php
 
 require __DIR__."/app/app.php";
-use uranium\scriptloader;
-scriptloader::folder(__DIR__."/app/cli");
+
+use uranium\cli\cliCommandHandler;
 
 $cmdHandler = new cliCommandHandler($argv);
+
+var_dump($cmdHandler->classList);

@@ -9,6 +9,7 @@ class router extends \routes{
             self::loadRoute($route["route"], $route['variables']);
         }else{
             echo "404";
+            error_log("[*] Router: Route not found");
         }
     }
 

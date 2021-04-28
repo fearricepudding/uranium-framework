@@ -16,8 +16,8 @@ class pageHandler{
             $inTemplate = templateHandler::renderTemplate($pageData);
             self::render($inTemplate); 
         }else{
-            echo 'Template not found';
-            error_log("Template not found");
+            echo "Template ".$VIEWNAME." not found";
+            error_log("[*] PageHandler: Template not found");
         }
     }
 
