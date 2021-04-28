@@ -3,6 +3,6 @@ namespace uranium\cli;
 
 class testing{
 	public static function echo(){
-		echo "Hello, World!";
+		echo "Hello, World!".PHP_EOL;
 	}
 }

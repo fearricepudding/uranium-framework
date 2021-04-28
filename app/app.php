@@ -16,5 +16,6 @@ $dotenv->required(['SALT', 'COST']);
 scriptloader::file(__DIR__.'/../routes.php');
 scriptloader::folder(__DIR__."/database");
 scriptloader::folder(__DIR__."/core");
+scriptloader::folder(__DIR__."/cli");
 scriptloader::folder(__DIR__."/../models");
 scriptloader::folder(__DIR__."/../controllers");

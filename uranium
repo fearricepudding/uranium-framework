@@ -6,4 +6,3 @@ use uranium\cli\cliCommandHandler;
 
 $cmdHandler = new cliCommandHandler($argv);
 
-var_dump($cmdHandler->classList);
