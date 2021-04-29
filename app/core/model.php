@@ -160,7 +160,7 @@ EOD;
 		$template .= ")";
 		
 		echo $template;
-exit;
+		//exit;
 
 		// get db instance
 		$database = db::getInstance();
@@ -178,11 +178,13 @@ exit;
 	public function exists(){
 		$database = db::getInstance();
 		$query = $database->prepare("DESCRIBE ".$this->tableName);
-		if(!$query->execute()){
-			// There was an issue getting the table
+		try{
+			$query->execute();
+			return true;
+		}catch(Throwable $e){
+			error_log("Failed to get table");
 			return false;
-		};
-		return true;
+		}
 	}
 
 	public function drop(){

@@ -11,8 +11,16 @@ class exampleController{
 
 		$test = new exampleModel();
 		$test->drop();
-		$test->create();
-		var_dump($test->cols);
+//		$test->create();
+		try{
+			echo $test->exists();
+			$test->get();
+			var_dump($test->cols);
+		}catch(PDOException $e){
+			echo "Table doesnt exist... creating table";
+			$test->create();
+		}
+	//	var_dump($test->cols);
 		exit;
 
 		try{
@@ -20,7 +28,7 @@ class exampleController{
 		//$test->create();
 		//	echo "Creating table... <br />";
 		//	echo "Getting values... <br />";
-		$test->get();
+//		$test->get();
 		//	foreach($test->rows as $value){
 		//		var_dump($value);
 		//		echo "<br />";
@@ -30,11 +38,11 @@ class exampleController{
 //			$newRow["test"] = "example manya";
 //			$newRow["name"] = "Someone";
 //
-	//		$test->rows[] = $newRow; 
-			$test->rows[0]["name"] = "Modified Name";
-			$test->rows[1]["name"] = "Row 2";
-			$test->rows[2]["name"] = "row 3";
-			$test->save();
+//	//		$test->rows[] = $newRow; 
+//			$test->rows[0]["name"] = "Modified Name";
+//			$test->rows[1]["name"] = "Row 2";
+//			$test->rows[2]["name"] = "row 3";
+//			$test->save();
 		}catch(PDOException $e){
 			echo $e;
 			echo "Failure";
