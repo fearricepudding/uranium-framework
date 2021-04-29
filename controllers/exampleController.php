@@ -10,26 +10,31 @@ class exampleController{
 	public static function examplepage(){
 
 		$test = new exampleModel();
+		$test->drop();
+		$test->create();
+		var_dump($test->cols);
+		exit;
+
 		try{
 		//	echo "Dropping table... <br />";
-			//$test->drop();
+		//$test->create();
 		//	echo "Creating table... <br />";
-			//$test->create();
 		//	echo "Getting values... <br />";
-		//	$test->get();
-		//	//		var_dump($test->rows);
+		$test->get();
 		//	foreach($test->rows as $value){
 		//		var_dump($value);
 		//		echo "<br />";
 		//	}
 		//	echo "<br />Setting new value... <br />";
-		//	$newRow=[];
-		//	$newRow["test"] = "example manya";
-		//	$newRow["name"] = "Someone";
-
-		//	$test->rows[] = $newRow; 
-		//	$test->rows[1]["name"] = "Modified Name";
-		//	$test->save();
+//			$newRow=[];
+//			$newRow["test"] = "example manya";
+//			$newRow["name"] = "Someone";
+//
+	//		$test->rows[] = $newRow; 
+			$test->rows[0]["name"] = "Modified Name";
+			$test->rows[1]["name"] = "Row 2";
+			$test->rows[2]["name"] = "row 3";
+			$test->save();
 		}catch(PDOException $e){
 			echo $e;
 			echo "Failure";

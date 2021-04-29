@@ -16,10 +16,18 @@ class databaseDataTypes{
 }
 
 class model extends databaseDataTypes{
-	protected $cols = [];
+	public $cols = [];
 	public $rows = [];
 	protected $tableName;
 	protected $pkn;
+	private $colOptions = [
+		"type" => null,
+		"length" => 10,
+		"default" => "",
+		"constraint" => null,
+		"null" => true,
+		"auto_increment" => false
+	];
 	
 	protected function addPrimary($name){
 		$this->pkn = $name;
@@ -32,16 +40,18 @@ class model extends databaseDataTypes{
 			"null" => true
 		];
 	}
+
 	
-	protected function addCol($name, $type, $length=10, $default=false, $null=false){
-		$this->cols[] = [
-			"name"=> $name,
-			"type"=> $type,
-			"length"=> $length,
-			"default" => $default?$default:"",
-			"constraint" => false,
-			"null" => $null
-		];
+	
+	protected function addCol(string $name, array $options){
+		$newcol = $this->colOptions;
+		$newcol["name"] = $name;
+		foreach($this->colOptions as $key=>$option){
+			if(array_key_exists($key, $options)){
+				$newcol[$key] = $options[$key];
+			}
+		}
+		$this->cols[] = $newcol;
 	}
 
 	/**
@@ -122,6 +132,9 @@ class model extends databaseDataTypes{
 	
 	/**
 	 * Crete the table in the database
+	 * TODO: Default value strings will generate invlaid SQL
+	 * 	 but adding 'default' to the sql will invalidate
+	 *	 AUTO_INCREMENT. 
 	 */
 	public function create(){
 		$tableName = $this->tableName;
@@ -133,7 +146,7 @@ EOD;
 			if($col["constraint"] === "PK"){
 				$pkName = $col["name"];
 			}
-			$null = $col["null"]?"NOT NULL":"";
+			$null = $col["null"]?"":"NOT NULL";
 			$name = $col["name"];
 			$type = $col["type"]["ID"];
 			$length = $col["length"];
@@ -145,6 +158,9 @@ EOD;
 		}
 		$template .= "PRIMARY KEY(".$pkName.")";
 		$template .= ")";
+		
+		echo $template;
+exit;
 
 		// get db instance
 		$database = db::getInstance();

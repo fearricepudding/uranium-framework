@@ -11,7 +11,15 @@ class exampleModel extends model{
 
 	public function __construct(){
 		$this->addPrimary("id");
-		$this->addCol("name", databaseDataTypes::VARCHAR, 20);
-		$this->addCol("test", databaseDataTypes::VARCHAR, 50);
+		$this->addCol("name", [
+			"type" 	 => databaseDataTypes::VARCHAR,
+			"length" => 50,
+			"null" => false
+		]);
+		$this->addCol("test", [
+			"type" => databaseDataTypes::VARCHAR,
+			"null" => false,
+			"default" => "Something"
+		]);
 	}	
 }
