@@ -26,14 +26,9 @@ class cliCommandHandler{
             return false;
         };
         $splitRoute = explode(".", $cmd);
-//        $class = new $splitRoute[0];
+        $class = new $splitRoute[0];
         $function = $splitRoute[1];
-        try{
-        	//$class::$function($variables);
-		testing::echo();
-		}catch(Error $e){
-			echo 'Very nice way to catch Exception and Error exceptions';
-		}
+        $class::$function();
     }
 
 	private function findCommandFile($ctf){

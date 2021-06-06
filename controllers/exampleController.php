@@ -10,17 +10,16 @@ class exampleController{
 	public static function examplepage(){
 
 		$test = new exampleModel();
-		$test->drop();
+//		$test->drop();
 //		$test->create();
 		try{
-			echo $test->exists();
+			echo $test->exists()?"table exists":"Table doesnt exist";
 			$test->get();
-			var_dump($test->cols);
+			//var_dump($test->cols);
 		}catch(PDOException $e){
 			echo "Table doesnt exist... creating table";
 			$test->create();
 		}
-	//	var_dump($test->cols);
 		exit;
 
 		try{

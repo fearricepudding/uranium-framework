@@ -36,7 +36,7 @@ class model extends databaseDataTypes{
 			"type"=> databaseDataTypes::INTEGER,
 			"constraint" => "PK",
 			"length" => 10,
-			"default" => "AUTO_INCREMENT",
+			"flag" => "AUTO_INCREMENT",
 			"null" => true
 		];
 	}
@@ -132,15 +132,10 @@ class model extends databaseDataTypes{
 	
 	/**
 	 * Crete the table in the database
-	 * TODO: Default value strings will generate invlaid SQL
-	 * 	 but adding 'default' to the sql will invalidate
-	 *	 AUTO_INCREMENT. 
 	 */
 	public function create(){
 		$tableName = $this->tableName;
-		$template = <<<EOD
-			CREATE TABLE $tableName(
-EOD;
+		$template = "CREATE TABLE $tableName(";
 		$pkName = "";
 		foreach($this->cols as $col){
 			if($col["constraint"] === "PK"){
@@ -150,17 +145,23 @@ EOD;
 			$name = $col["name"];
 			$type = $col["type"]["ID"];
 			$length = $col["length"];
-			$default = $col["default"];
-			$template .= <<<EOD
-				$name $type($length) $null $default,
-EOD;
-	
+			$default = $col["default"]?$col["default"]:"";
+			$flag = $col["flag"]?$col["flag"]:"";
+
+			$template .= "$name $type($length) $null";
+			if(strlen($default) > 0){
+				$template .= " default '$default' ";
+			}
+			if(strlen($flag) > 0){
+				$template .= " $flag ";
+			}
+			$template .= ',';
 		}
 		$template .= "PRIMARY KEY(".$pkName.")";
 		$template .= ")";
 		
-		echo $template;
-		//exit;
+		// echo $template;
+		// exit;
 
 		// get db instance
 		$database = db::getInstance();
