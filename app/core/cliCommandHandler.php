@@ -11,8 +11,7 @@ class cliCommandHandler{
 	public function __construct($argv){
 		$this->argv = $argv;
 		if(!isset($argv[1])){
-			error_log("Usage: php uranium domain.command args");
-			exit;
+			self::commandNotFound();
 		};
 		$commandSplit = explode(".", $argv[1]);
 		cliCommandHandler::runCommand($this->argv[1]);
@@ -24,7 +23,7 @@ class cliCommandHandler{
         if(empty($cmd)){
             return false;
         };
-        echo "Running: ".$cmd.PHP_EOL;
+        echo "[*] Running: ".$cmd.PHP_EOL;
         echo "----".PHP_EOL;
         $splitRoute = explode(".", $cmd);
         $class = "\uranium\cli\\".$splitRoute[0];
@@ -43,7 +42,10 @@ class cliCommandHandler{
     }
 
     private static function commandNotFound(){
-    	echo "Command not found.".PHP_EOL;
+    	error_log("[*] Command not found.");
+    	error_log("[*] Usage: php uranium domain.command args");
+    	error_log("[*] Use php uranium commands.list for a list of commands.");
+    	exit;
     }
 
 }
