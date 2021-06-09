@@ -26,7 +26,8 @@ class model extends databaseDataTypes{
 		"default" => "",
 		"constraint" => null,
 		"null" => true,
-		"auto_increment" => false
+		"auto_increment" => false,
+		"flag" => false
 	];
 	
 	protected function addPrimary($name){
@@ -37,7 +38,8 @@ class model extends databaseDataTypes{
 			"constraint" => "PK",
 			"length" => 10,
 			"flag" => "AUTO_INCREMENT",
-			"null" => true
+			"null" => true,
+			"default" => false
 		];
 	}
 

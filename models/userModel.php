@@ -11,8 +11,20 @@ class userModel extends model{
 
 	public function __construct(){
 		$this->addPrimary("id");
-		$this->addCol("username", databaseDataTypes::VARCHAR, 20);
-		$this->addCol("email", databaseDataTypes::VARCHAR, 50);
-		$this->addCol("password", databaseDataTypes::VARCHAR, 72); //bcrypt max 64char password length
+		$this->addCol("username",[
+			"type" 	 => databaseDataTypes::VARCHAR,
+			"length" => 20,
+			"null"   => false
+		]);
+		$this->addCol("email", [
+			"type" 	 => databaseDataTypes::VARCHAR,
+			"length" => 50,
+			"null"	 => false
+		]);
+		$this->addCol("password", [
+			"type"	 => databaseDataTypes::VARCHAR, 
+			"length" => 72,
+			"null"   => false
+		]); 
 	}	
 }

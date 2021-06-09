@@ -33,7 +33,6 @@ class cliCommandHandler{
 	        if(method_exists($classObj, $method)){
 		        $class::$method();
 		    }else{
-		    	// Method doesnt exist
 		    	self::commandNotFound();
 		    };
 		}else{
