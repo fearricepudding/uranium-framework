@@ -20,10 +20,10 @@ Controllers:
 CLI:
   ☐ Command Handler
     ☐ Output formatting
-    ☐ Run commands
+    ✔ Run commands @done (21-06-09 16:42)
       ✔ Read & register command scripts @done (21-04-28 18:22)
       ✔ Command domain grouping (seperated by .) @done (21-04-28 18:23)
-      ☐ Execute class and command 
+      ✔ Execute class and command @done (21-06-09 16:41)
   ☐ Debug commands
   ☐ Application management commands
     ☐ Database management

@@ -15,7 +15,6 @@ class cliCommandHandler{
 			exit;
 		};
 		$commandSplit = explode(".", $argv[1]);
-
 		cliCommandHandler::runCommand($this->argv[1]);
 
 	}
@@ -25,58 +24,26 @@ class cliCommandHandler{
         if(empty($cmd)){
             return false;
         };
+        echo "Running: ".$cmd.PHP_EOL;
+        echo "----".PHP_EOL;
         $splitRoute = explode(".", $cmd);
-        $class = new $splitRoute[0];
-        $function = $splitRoute[1];
-        $class::$function();
+        $class = "\uranium\cli\\".$splitRoute[0];
+        if(class_exists($class)){
+        	$classObj = new $class();
+        	$method = $splitRoute[1];
+	        if(method_exists($classObj, $method)){
+		        $class::$method();
+		    }else{
+		    	// Method doesnt exist
+		    	self::commandNotFound();
+		    };
+		}else{
+			self::commandNotFound();
+		};
     }
 
-	private function findCommandFile($ctf){
-		if(strlen($this->commandDirectory) <= 0){
-			return false;
-		};
-		if(file_exists($this->commandDirectory)){
-			$filesToInclude = scandir($this->commandDirectory);
-			unset($filesToInclude[0]); // Remove . and ..
-			unset($filesToInclude[1]); // from dir list
-			foreach($filesToInclude as $file){
-				if(!is_dir($this->commandDirectory.'/'.$file)){
-					$file = $this->commandDirectory."/".$file;
-					$fp = fopen($file, 'r');
-					$class = $namespace = $buffer = '';
-					$i = 0;
-					while (!$class) {
-					    if (feof($fp)) break;
-					    $buffer .= fread($fp, 512);
-					    $tokens = token_get_all($buffer);
-					    if (strpos($buffer, '{') === false) continue;
-					    for (;$i<count($tokens);$i++) {
-					        if ($tokens[$i][0] === T_NAMESPACE) {
-					            for ($j=$i+1;$j<count($tokens); $j++) {
-					                if ($tokens[$j][0] === T_STRING) {
-					                     $namespace .= '\\'.$tokens[$j][1];
-					                } else if ($tokens[$j] === '{' || $tokens[$j] === ';') {
-					                     break;
-					                };
-					            };
-					        };
-					        if ($tokens[$i][0] === T_CLASS) {
-					            for ($j=$i+1;$j<count($tokens);$j++) {
-					                if ($tokens[$j] === '{') {
-					                    $class = $tokens[$i+2][1];
-					                };
-					            };
-					        };
-					    };
-					};
-					$item = [
-						"class" 	=> $class, 
-						"namespace" => $namespace
-					];
-					$this->classList[] = $item;
-				};
-			};
-			return false;
-		};
-	}
+    private static function commandNotFound(){
+    	echo "Command not found.".PHP_EOL;
+    }
+
 }

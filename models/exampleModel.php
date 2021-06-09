@@ -10,7 +10,7 @@ class exampleModel extends model{
 	protected $tableName = "exampleModel";
 
 	public function __construct(){
-		$this->addPrimary("id");
+		$this->addPrimary("id"); 
 		$this->addCol("name", [
 			"type" 	 => databaseDataTypes::VARCHAR,
 			"length" => 50,
