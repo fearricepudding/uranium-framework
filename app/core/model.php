@@ -11,16 +11,25 @@ use uranium\database\db;
 use \PDO;
 
 class databaseDataTypes{
-	public const VARCHAR = ["ID" => "VARCHAR"];
-	public const INTEGER = ["ID" => "INT"];
+	public const VARCHAR = ["ID" => "VARCHAR", "MAX" => 255];
+	public const INTEGER = ["ID" => "INT", "MAX" => 100];
+	public const BOOLEAN = ["ID" => "BOOL", "MAX" => 1];
+	public const TEXT    = ["ID" => "TEXT", "MAX" => 2000];
 }
 
 class model extends databaseDataTypes{
-	public $cols = [];
-	public $rows = [];
-	protected $tableName;
-	protected $pkn;
+
+	public $cols = array();  	// Array of data columns
+	public $rows = array(); 	// Array of data from database
+	protected $tableName;	
+	protected $pkn;				// Primary key name
+	private	$query = ["selectors" => []];	// Build a query
+
+	/**
+	 * Valid col options
+	 */
 	private $colOptions = [
+		"name" => "",
 		"type" => null,
 		"length" => 10,
 		"default" => "",
@@ -30,7 +39,13 @@ class model extends databaseDataTypes{
 		"flag" => false
 	];
 	
-	protected function addPrimary($name){
+	/**
+	 * Adds an auto incrementing primary key
+	 * 		with specified name
+	 * 
+	 * @param String - Name of the primary key
+	 */
+	protected function addPrimary(String $name){
 		$this->pkn = $name;
 		$this->cols[] = [
 			"name"=> $name,
@@ -42,9 +57,14 @@ class model extends databaseDataTypes{
 			"default" => false
 		];
 	}
-
 	
-	
+	/**
+	 * Add a data column to the table
+	 * 		values are specified by colOptions
+	 * 
+	 * @param String - name of col
+	 * @param Array  - array of col options
+	 */
 	protected function addCol(string $name, array $options){
 		$newcol = $this->colOptions;
 		$newcol["name"] = $name;
@@ -57,18 +77,49 @@ class model extends databaseDataTypes{
 	}
 
 	/**
-	 * Fetch item in database
-	 * @param $iid - pk value of item to fetch
-	 *
-	 * TODO: Allow array of IDS to fetch
+	 * Add where selector to query
+	 * 
+	 * @param String - column name to filter
+	 * @param String - value to filter
+	 * 
+	 * @return model object
 	 */
-	public function get($iid=false){
+	public function where(String $key, String $value){
+		$this->query["selectors"][] = ["key" => $key, "value" => $value]; 
+		return $this;
+	}
+
+	/**
+	 * add a limit to ammount of rows to fetch
+	 * 
+	 * @param Int limit to rows
+	 * 
+	 * @return model object
+	 */
+	public function limit(Int $limit){
+		$this->query["limit"] = $limit;
+		return $this;
+	}
+
+	/**
+	 * Fetch item in database
+	 * 
+	 * @return Bool status
+	 */
+	public function get(){
 		$tableName = $this->tableName;
 		$database = db::getInstance();
 		$sql = "SELECT * FROM $tableName";
-		if($iid){
-			$pkn = $this->pkn;
-			$sql .= " WHERE `$pkn`='$iid'";
+		if(count($this->query["selectors"]).length > 0){
+			$sql .= " WHERE ";
+			foreach($this->query["selectors"] as $key=>$selector){
+				if($key >= 1)
+					$sql .= " AND ";
+				$sql .= "`".$selector["key"]."`='".$selector["value"]."'";
+			}
+		}
+		if(key_exists("limit", $this->query)){
+			$sql .= " LIMIT ".$this->query["limit"];
 		}
 		$query = $database->prepare($sql);
 		if($query->execute()){
@@ -81,6 +132,11 @@ class model extends databaseDataTypes{
 		};
 	}
  
+ 	/**
+ 	 * Save new data in rows to database
+ 	 * 
+ 	 * @return Bool status
+ 	 */
 	public function save(){
 		if(count($this->rows) <= 0){
 			return;
@@ -134,6 +190,8 @@ class model extends databaseDataTypes{
 	
 	/**
 	 * Crete the table in the database
+	 * 
+	 * @return Bool status
 	 */
 	public function create(){
 		$tableName = $this->tableName;
@@ -190,6 +248,11 @@ class model extends databaseDataTypes{
 		}
 	}
 
+	/**
+	 * Drop table
+	 * 
+	 * @return Bool status
+	 */
 	public function drop(){
 		$database = db::getInstance();
 		$tableName = $this->tableName;

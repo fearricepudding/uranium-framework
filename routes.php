@@ -7,7 +7,7 @@
  */
 class routes{
     public static $public_routes=[
-        "/" => "exampleController@examplepage",
+        "/" => "exampleController@modelExample",
     	"/user" => "exampleController@userexample",
 		"/test/{item_test}" => "exampleController@variableExample",
 		"/test/{item_test}/test" => "exampleController@variableExtension",

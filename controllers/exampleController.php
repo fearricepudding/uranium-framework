@@ -8,45 +8,6 @@ use uranium\model\exampleModel;
 class exampleController{
 	
 	public static function examplepage(){
-
-		$test = new exampleModel();
-//		$test->drop();
-//		$test->create();
-		try{
-			echo $test->exists()?"table exists":"Table doesnt exist";
-			$test->get();
-			//var_dump($test->cols);
-		}catch(PDOException $e){
-			echo "Table doesnt exist... creating table";
-			$test->create();
-		}
-		exit;
-
-		try{
-		//	echo "Dropping table... <br />";
-		//$test->create();
-		//	echo "Creating table... <br />";
-		//	echo "Getting values... <br />";
-//		$test->get();
-		//	foreach($test->rows as $value){
-		//		var_dump($value);
-		//		echo "<br />";
-		//	}
-		//	echo "<br />Setting new value... <br />";
-//			$newRow=[];
-//			$newRow["test"] = "example manya";
-//			$newRow["name"] = "Someone";
-//
-//	//		$test->rows[] = $newRow; 
-//			$test->rows[0]["name"] = "Modified Name";
-//			$test->rows[1]["name"] = "Row 2";
-//			$test->rows[2]["name"] = "row 3";
-//			$test->save();
-		}catch(PDOException $e){
-			echo $e;
-			echo "Failure";
-		}
-		$testData = ["first" => "firstItem", "second"=>"secondItem"];
 		pageHandler::view("example", ["test"=>"example", "data" => $testData]);
 	}
 
@@ -76,5 +37,38 @@ class exampleController{
 	public static function twoVariables($variables){
 		echo "Two variables <br />";
 		var_dump($variables);
+	}
+
+	public static function modelExample(){
+		$test = new exampleModel();
+//		$test->drop();
+//		$test->create();
+
+		try{
+
+			// Get with selectors
+			$test->where("name", "someone")
+				->where("test", "example")
+				->limit(1)
+				->get();
+
+			foreach($test->rows as $value){
+				var_dump($value);
+				echo "<br />";
+			}
+
+			// echo "<br />";
+			// $newRow=[];
+			// $newRow["test"] = "example";
+			// $newRow["name"] = "Someone";
+			// $test->rows[] = $newRow; 
+			// echo "<br />";
+			// $test->save();
+
+		}catch(PDOException $e){
+			echo $e;
+			echo "Failure";
+		}
+		echo PHP_EOL."DONE.".PHP_EOL;
 	}
 }	

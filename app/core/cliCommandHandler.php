@@ -46,5 +46,4 @@ class cliCommandHandler{
     	error_log("[*] Use php uranium commands.list for a list of commands.");
     	exit;
     }
-
 }
