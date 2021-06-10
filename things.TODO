@@ -4,7 +4,10 @@ Model:
     ☐ One to Many
     ☐ Many to One
   ☐ Add all data types
-  ☐ Add filtering options to get
+  ✔ Add filtering options to get @done (21-06-10 16:00)
+  ☐ Add datatype validation checking to avoid errors
+    ☐ Check max length
+    ☐ Check correct data type inputted
   ☐ Allow default date on create / update
   ☐ Fix checking if table exists
 
