@@ -23,7 +23,11 @@ class model extends databaseDataTypes{
 	public $rows = array(); 	// Array of data from database
 	protected $tableName;	
 	protected $pkn;				// Primary key name
-	private	$query = ["selectors" => []];	// Build a query
+	private	$query = [];		// Build a query
+
+	public function __construct(){
+		$this->setupQuery(); // Setup the default empty query
+	}
 
 	/**
 	 * Valid col options
@@ -110,7 +114,7 @@ class model extends databaseDataTypes{
 		$tableName = $this->tableName;
 		$database = db::getInstance();
 		$sql = "SELECT * FROM $tableName";
-		if(count($this->query["selectors"]).length > 0){
+		if(count($this->query["selectors"]) > 0){
 			$sql .= " WHERE ";
 			foreach($this->query["selectors"] as $key=>$selector){
 				if($key >= 1)
@@ -122,6 +126,9 @@ class model extends databaseDataTypes{
 			$sql .= " LIMIT ".$this->query["limit"];
 		}
 		$query = $database->prepare($sql);
+
+		// Reset query selectors for next time
+		$this->query = ["selectors" => []];
 		if($query->execute()){
 			while($row = $query->fetch(PDO::FETCH_ASSOC)){
 				$this->rows[] = $row;
@@ -130,6 +137,14 @@ class model extends databaseDataTypes{
 		}else{
 			return false;
 		};
+	}
+
+	/**
+	 * setup the default empty query
+	 * (put here in case of change later on)
+	 */
+	private function setupQuery(){
+		$this->query = ["selectors" => []];
 	}
  
  	/**

@@ -31,6 +31,7 @@ CLI:
   ☐ Application management commands
     ☐ Database management
       ☐ Drop tables
-      ☐ Create tables
+      ✔ Create tables @done (21-06-13 21:32)
+      ✔ Recreate empty tables @done (21-06-13 21:32)
       ☐ update tables with modified model
       ☐ verify database integrity

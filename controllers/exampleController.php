@@ -47,10 +47,9 @@ class exampleController{
 		try{
 
 			// Get with selectors
-			// TODO: XXX: Wont reset after a query
 			$test->where("name", "someone")
 				->where("test", "example")
-				->limit(1)
+				->limit(5)
 				->get();
 
 			foreach($test->rows as $value){
