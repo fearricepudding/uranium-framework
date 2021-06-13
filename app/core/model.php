@@ -198,7 +198,7 @@ class model extends databaseDataTypes{
 			$database->commit();
 			return true;
 		}catch(PDOException $e){
-			$database->rollBack();
+			$database->rollBack(); // We messed up, go back.
 			return false;
 		}
 	}
@@ -238,11 +238,8 @@ class model extends databaseDataTypes{
 		// echo $template;
 		// exit;
 
-		// get db instance
 		$database = db::getInstance();
-		// execute command
 		$query = $database->prepare($template);
-		// rollback if error
 		if($query->execute()){
 			return true;
 		}else{
@@ -250,7 +247,12 @@ class model extends databaseDataTypes{
 		}
 	}
 
-	// TODO: Throws an error if the table doesnt exist, want to just return
+	/**
+	 * Checks if database table exists
+	 * XXX: TODO: Doesn't catch error. Needs fixing
+	 * 
+	 * @return Boolean 
+	 */
 	public function exists(){
 		$database = db::getInstance();
 		$query = $database->prepare("DESCRIBE ".$this->tableName);
@@ -266,7 +268,7 @@ class model extends databaseDataTypes{
 	/**
 	 * Drop table
 	 * 
-	 * @return Bool status
+	 * @return Boolean
 	 */
 	public function drop(){
 		$database = db::getInstance();
