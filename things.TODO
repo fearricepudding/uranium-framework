@@ -9,7 +9,7 @@ Model:
     ☐ Check max length
     ☐ Check correct data type inputted
   ☐ Allow default date on create / update
-  ☐ Fix checking if table exists
+  ✔ Fix checking if table exists @done (21-06-24 17:23)
 
 Views:
   ☐ Handle page errors
@@ -34,4 +34,5 @@ CLI:
       ✔ Create tables @done (21-06-13 21:32)
       ✔ Recreate empty tables @done (21-06-13 21:32)
       ☐ update tables with modified model
-      ☐ verify database integrity
+      ✔ verify database integrity @done (21-06-24 17:23)
+        ☐ If verification fails - fix found issues
