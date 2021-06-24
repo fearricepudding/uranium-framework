@@ -13,6 +13,15 @@ class router extends \routes{
         }
     }
 
+    private static function getRouteList(){
+    	if($_SERVER['REQUEST_METHOD'] === "GET"){
+    		return self::$get_routes;
+    	}else if($_SERVER['REQUEST_METHOD'] === "POST"){
+    		return self::$post_routes;
+    	};
+    	return [];
+    }
+
     private static function getRoute(){
 		$URI = $_SERVER['REQUEST_URI'];
 		$URIComps = explode("/", $URI);
@@ -20,14 +29,14 @@ class router extends \routes{
 			$URIComps = array_slice($URIComps, 1); // Remove first empty item
 		};
 		$compSize = count($URIComps);
-		$matches = self::$public_routes;
+		$matches = self::getRouteList();
 		$variables = [];
 		$level = 0; 
 		foreach($URIComps as $URIComp){
 			if($level > 0 && $URIComp == ""){
 				break;	
 			}
-			foreach(self::$public_routes as $route=>$controller){
+			foreach(self::getRouteList() as $route=>$controller){
 				$routeComps = explode("/", $route); 
 				if($routeComps[0] == ""){
 					$routeComps = array_slice($routeComps, 1); // Remove empty array item

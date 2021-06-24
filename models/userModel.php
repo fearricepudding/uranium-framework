@@ -13,7 +13,7 @@ class userModel extends model{
 		$this->addPrimary("id");
 		$this->addCol("username",[
 			"type" 	 => databaseDataTypes::VARCHAR,
-			"length" => 20,
+			"length" => 21,
 			"null"   => false
 		]);
 		$this->addCol("email", [

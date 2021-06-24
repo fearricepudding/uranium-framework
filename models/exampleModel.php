@@ -13,7 +13,7 @@ class exampleModel extends model{
 		$this->addPrimary("id"); 
 		$this->addCol("name", [
 			"type" 	 => databaseDataTypes::VARCHAR,
-			"length" => 50,
+			"length" => 20,
 			"null" => false
 		]);
 		$this->addCol("test", [

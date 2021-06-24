@@ -6,11 +6,15 @@
  * The variables are passed as an array to the controller
  */
 class routes{
-    public static $public_routes=[
+    public static $get_routes=[
         "/" => "exampleController@modelExample",
     	"/user" => "exampleController@userexample",
 		"/test/{item_test}" => "exampleController@variableExample",
 		"/test/{item_test}/test" => "exampleController@variableExtension",
 		"/test/{item_test}/test/{seconditem}" => "exampleController@twoVariables"
+    ];
+
+    public static $post_routes=[
+        "/" => "exampleController@postExample"
     ];
 }

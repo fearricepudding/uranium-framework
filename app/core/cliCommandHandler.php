@@ -2,6 +2,9 @@
 
 namespace uranium\cli;
 
+use uranium\cli\cliColour;
+use Throwable;
+
 class cliCommandHandler{
 
 	public $classList = array();
@@ -15,23 +18,36 @@ class cliCommandHandler{
 		};
 		$commandSplit = explode(".", $argv[1]);
 		cliCommandHandler::runCommand($this->argv[1]);
-
 	}
 
-	// TODO: Not catching errors
+	/**
+	 * Find and execute the command 
+	 * with the correct namespace
+	 * 
+	 * @param String - command from CLI
+	 */
 	private static function runCommand($cmd){
         if(empty($cmd)){
             return false;
         };
-        echo "[*] Running: ".$cmd.PHP_EOL;
-        echo "----".PHP_EOL;
+        echo cliColour::GREEN."[*] Running: ".$cmd.cliColour::RESET.PHP_EOL;
+        echo PHP_EOL;
         $splitRoute = explode(".", $cmd);
         $class = "\uranium\cli\\".$splitRoute[0];
         if(class_exists($class)){
         	$classObj = new $class();
         	$method = $splitRoute[1];
 	        if(method_exists($classObj, $method)){
-		        $class::$method();
+	        	try{
+		        	$class::$method();
+		        }catch(Throwable $e){
+		        	echo cliColour::RED;
+		        	echo "An error occured".PHP_EOL;
+		        	echo PHP_EOL;
+		        	echo $e;
+		        	echo PHP_EOL;
+		        	echo cliColour::RESET;
+		        };
 		    }else{
 		    	self::commandNotFound();
 		    };
@@ -40,10 +56,16 @@ class cliCommandHandler{
 		};
     }
 
+    /**
+     * Default not found error
+     * !Stops exec
+     */
     private static function commandNotFound(){
-    	error_log("[*] Command not found.");
-    	error_log("[*] Usage: php uranium domain.command args");
-    	error_log("[*] Use php uranium commands.list for a list of commands.");
+    	echo cliColour::RED;
+    	echo "[*] Command not found.".PHP_EOL;
+    	echo "[*] Usage: php uranium domain.command args".PHP_EOL;
+    	echo "[*] Use php uranium commands.list for a list of commands.".PHP_EOL;
+    	echo cliColour::RESET;
     	exit;
     }
 }

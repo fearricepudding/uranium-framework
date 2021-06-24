@@ -44,7 +44,7 @@ class exampleController{
 //		$test->drop();
 //		$test->create();
 
-		try{
+		if($test->exists()){ // Check the table exists before query
 
 			// Get with selectors
 			$test->where("name", "someone")
@@ -65,10 +65,9 @@ class exampleController{
 			// echo "<br />";
 			// $test->save();
 
-		}catch(PDOException $e){
-			echo $e;
-			echo "Failure";
 		}
+
+		
 		echo PHP_EOL."DONE.".PHP_EOL;
 	}
 }	

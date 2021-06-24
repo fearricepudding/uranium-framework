@@ -9,6 +9,7 @@ namespace uranium\core;
 
 use uranium\database\db;
 use \PDO;
+use Throwable;
 
 class databaseDataTypes{
 	public const VARCHAR = ["ID" => "VARCHAR", "MAX" => 255];
@@ -34,13 +35,13 @@ class model extends databaseDataTypes{
 	 */
 	private $colOptions = [
 		"name" => "",
-		"type" => null,
+		"type" => NULL,
 		"length" => 10,
-		"default" => "",
-		"constraint" => null,
+		"default" => NULL,
+		"key" => "",
 		"null" => true,
 		"auto_increment" => false,
-		"flag" => false
+		"extra" => false
 	];
 	
 	/**
@@ -54,11 +55,11 @@ class model extends databaseDataTypes{
 		$this->cols[] = [
 			"name"=> $name,
 			"type"=> databaseDataTypes::INTEGER,
-			"constraint" => "PK",
+			"key" => "PRI",
 			"length" => 10,
-			"flag" => "AUTO_INCREMENT",
-			"null" => true,
-			"default" => false
+			"extra" => "AUTO_INCREMENT",
+			"null" => false,
+			"default" => NULL
 		];
 	}
 	
@@ -179,7 +180,7 @@ class model extends databaseDataTypes{
 				$values = "";
 				$template = "INSERT INTO `$tableName` (";
 				foreach($this->cols as $col){
-					if($col["constraint"] != "PK"){
+					if($col["key"] != "PRI"){
 						if(array_Key_exists($col["name"], $row)){
 							$currentKey = $col["name"];
 							$currentValue = $row[$col["name"]];
@@ -213,31 +214,27 @@ class model extends databaseDataTypes{
 		$template = "CREATE TABLE $tableName(";
 		$pkName = "";
 		foreach($this->cols as $col){
-			if($col["constraint"] === "PK"){
+			if($col["key"] === "PRI"){
 				$pkName = $col["name"];
 			}
 			$null = $col["null"]?"":"NOT NULL";
 			$name = $col["name"];
 			$type = $col["type"]["ID"];
 			$length = $col["length"];
-			$default = $col["default"]?$col["default"]:"";
-			$flag = $col["flag"]?$col["flag"]:"";
+			$default = $col["default"];
+			$extra = $col["extra"]?$col["extra"]:"";
 
 			$template .= "$name $type($length) $null";
 			if(strlen($default) > 0){
 				$template .= " default '$default' ";
 			}
-			if(strlen($flag) > 0){
-				$template .= " $flag ";
+			if(strlen($extra) > 0){
+				$template .= " $extra ";
 			}
 			$template .= ',';
 		}
 		$template .= "PRIMARY KEY(".$pkName.")";
 		$template .= ")";
-		
-		// echo $template;
-		// exit;
-
 		$database = db::getInstance();
 		$query = $database->prepare($template);
 		if($query->execute()){
@@ -260,7 +257,7 @@ class model extends databaseDataTypes{
 			$query->execute();
 			return true;
 		}catch(Throwable $e){
-			error_log("Failed to get table");
+			// Error, table probably doesnt exist.
 			return false;
 		}
 	}
@@ -277,6 +274,26 @@ class model extends databaseDataTypes{
 		$query = $database->prepare($sql);
 		if($query->execute()){
 			return true;
+		}else{
+			return false;
+		};
+	}
+
+	/**
+	 * Get tables fields from the database
+	 *
+	 * @return Mixed
+	 */
+	public function getFields(){
+		$database = db::getInstance();
+		$tableName = $this->tableName;
+		$query = $database->prepare("SHOW COLUMNS FROM $tableName;");
+		$rows = [];
+		if($query->execute()){
+			while($row = $query->fetch(PDO::FETCH_ASSOC)){
+				$rows[] = $row;
+			}
+			return $rows;
 		}else{
 			return false;
 		};
