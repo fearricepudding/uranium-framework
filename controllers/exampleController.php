@@ -4,6 +4,7 @@ use uranium\core\pageHandler;
 use uranium\core\userHandler;
 use uranium\core\encryptionEngine;
 use uranium\model\exampleModel;
+use uranium\model\userModel;
 
 class exampleController{
 	
@@ -40,31 +41,48 @@ class exampleController{
 	}
 
 	public static function modelExample(){
-		$test = new exampleModel();
+		$exampleModel = new exampleModel();
+		$userModel = new userModel();
 //		$test->drop();
 //		$test->create();
 
-		if($test->exists()){ // Check the table exists before query
+		if($exampleModel->exists()){ // Check the table exists before query
 
-			// Get with selectors
-			$test->where("name", "someone")
-				->where("test", "example")
-				->limit(5)
-				->get();
+			// Get with selectors and relationship
+			$data = $exampleModel->where("test", "example")
+			->get();
 
-			foreach($test->rows as $value){
-				var_dump($value);
+			// Idea 1 
+			$data = $exampleModel->where("test", "example")
+			->with(["username", "email"], "users")
+			->get();
+
+			// Idea 2
+			$data = $exampleModel->where("test", "example")
+			->join("relationshipName")
+			->get();
+
+			foreach($data as $row){
+				foreach($row as $key=>$value)
+				echo "$key: $value <br />";
 				echo "<br />";
 			}
 
-			// echo "<br />";
-			// $newRow=[];
-			// $newRow["test"] = "example";
-			// $newRow["name"] = "Someone";
-			// $test->rows[] = $newRow; 
-			// echo "<br />";
-			// $test->save();
+			// $newExampleData=[
+			// 	"test" => "example",
+			// 	"name" => "Jordan",
+			// 	"userid" => 1
+			// ];
+			// $exampleModel->rows[] = $newExampleData; 
+			// $exampleModel->save();
 
+			// $newUserData = [
+			// 	"username" => "fearricepudding",
+			// 	"email"	   => "jordanrandles@googlemail.com",
+			// 	"password" => "SecretPassword"
+			// ];
+			// $userModel->rows[] = $newUserData;
+			// $userModel->save();
 		}
 
 		

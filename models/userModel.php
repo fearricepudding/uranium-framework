@@ -10,6 +10,7 @@ class userModel extends model{
 	protected $tableName = "users";
 
 	public function __construct(){
+
 		$this->addPrimary("id");
 		$this->addCol("username",[
 			"type" 	 => databaseDataTypes::VARCHAR,
@@ -26,5 +27,8 @@ class userModel extends model{
 			"length" => 72,
 			"null"   => false
 		]); 
+
+
+		$this->addRelationship("tableName", "localID", "foreignID")
 	}	
 }

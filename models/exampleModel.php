@@ -10,6 +10,7 @@ class exampleModel extends model{
 	protected $tableName = "exampleModel";
 
 	public function __construct(){
+
 		$this->addPrimary("id"); 
 		$this->addCol("name", [
 			"type" 	 => databaseDataTypes::VARCHAR,
@@ -20,6 +21,10 @@ class exampleModel extends model{
 			"type" => databaseDataTypes::VARCHAR,
 			"null" => false,
 			"default" => "Something"
+		]);
+		$this->addCol("userid", [
+			"type" => databaseDataTypes::INTEGER,
+			"null" => false
 		]);
 	}	
 }

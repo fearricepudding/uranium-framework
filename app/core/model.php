@@ -24,7 +24,7 @@ class model extends databaseDataTypes{
 	public $rows = array(); 	// Array of data from database
 	protected $tableName;	
 	protected $pkn;				// Primary key name
-	private	$query = [];		// Build a query
+	private	$query = ["selectors" => array()];		// Build a query
 
 	public function __construct(){
 		$this->setupQuery(); // Setup the default empty query
@@ -134,9 +134,9 @@ class model extends databaseDataTypes{
 			while($row = $query->fetch(PDO::FETCH_ASSOC)){
 				$this->rows[] = $row;
 			}
-			return true;
+			return $this->rows;
 		}else{
-			return false;
+			return [];
 		};
 	}
 
