@@ -43,4 +43,8 @@ class exampleController{
 	public static function modelExample(){
 		pageHandler::view("modelForm");
 	}
+
+	public static function postExample(){
+		echo json_encode($_POST);
+	}
 }	

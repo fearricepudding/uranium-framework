@@ -77,7 +77,15 @@
 		</div>
 	</div>
 	<script>
+		function resetSearchInputs(){
+			document.getElementById('searchUsername').value = "";
+			document.getElementById('searchEmail').value = "";
+			document.getElementById('searchPassword').value = "";
+			document.getElementById('searchFirstName').value = "";
+			document.getElementById('searchLastName').value = "";
+		}
 		function submitSearch(){
+			resetSearchInputs();
 			let results = [];
 			let term = document.getElementById('searchField').value;
 			let includeDetails = document.getElementById('includeDetails').checked;
@@ -89,18 +97,24 @@
 					.then(data=>data.json())
 					.then((data)=>{
 						console.log(data);
-						results.push(data);
-						document.getElementById('searchUsername').value = data[0].username;
-						document.getElementById('searchEmail').value = data[0].email;
-						document.getElementById('searchPassword').value = data[0].password;
+						if(data.length > 0){
+							document.getElementById('searchUsername').value = data[0].username;
+							document.getElementById('searchEmail').value = data[0].email;
+							document.getElementById('searchPassword').value = data[0].password;
+							if(data[0].userDetails){
+								let details = data[0].userDetails[0];
+								document.getElementById('searchFirstName').value = details.first_name;
+								document.getElementById('searchLastName').value = details.last_name;
+							}
+						}else{
+							results.push("User not found");
+						}
 					});
 			}else{
 				results.push('Search term must be longer than 3 chars');
 			}
 			document.getElementById('searchResult').innerHTML = "";
-			for(let i = 0; i < results.length; i++){
-				document.getElementById('searchResult').innerHTML += results[i];
-			}
+			console.log(results);
 		}
 		function submitCreate(){
 			console.log("Creating user");

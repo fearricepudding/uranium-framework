@@ -9,8 +9,9 @@ use uranium\cli\cliColour;
 class database{
 	/**
 	 * Delete and recreate the tables from the models
+	 * @return void
 	 */
-	public static function recreate(){
+	public static function recreate(): void{
 		echo "[*] === Recreating Databases ===".PHP_EOL;
 		echo "[*] Reading models...".PHP_EOL;
 		$modelList = classHelper::getClassNamesFromDir(__DIR__."/../../models");
@@ -31,11 +32,10 @@ class database{
 
 	/**
 	 * Check the integrity of the database compaired to the models
-	 * 
 	 * @param Boolean - output styled report or array of results
-	 * @return Mixed
+	 * @return void
 	 */
-	public static function check($cliReport = true){
+	public static function check(bool $cliReport = true): void{
 		echo "[*] === Verifying database ===".PHP_EOL;
 		echo "[*] Reading models...".PHP_EOL;
 		echo PHP_EOL;
@@ -96,7 +96,7 @@ class database{
 			echo cliColour::RESET;
 			echo PHP_EOL;
 		}else{
-			var_dump($tableResult);
+			echo $tableResult;
 		};
 	}
 }

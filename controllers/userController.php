@@ -33,9 +33,9 @@ class userController{
 		$model->rows[] = $newUser;
 		try{
 			$result= $model->save();
-			echo "{result:true}";
+			echo "{\"result\":true}";
 		}catch(PDOException $e){
-			echo "{result:false}";
+			echo "{\"result\":false}";
 		}
 	}
 }
