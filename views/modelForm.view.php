@@ -1,4 +1,5 @@
 <body>
+	<input type="hidden" id="uid" value="" />
 	<style>
 		h1, h2, h3, h4, h5, h6{
 			padding:0;
@@ -84,9 +85,11 @@
 			document.getElementById('searchFirstName').value = "";
 			document.getElementById('searchLastName').value = "";
 		}
+
 		function submitSearch(){
 			resetSearchInputs();
-			let results = [];
+			let result = document.getElementById('searchResult');
+			result.innerHTML = "";
 			let term = document.getElementById('searchField').value;
 			let includeDetails = document.getElementById('includeDetails').checked;
 			if(term.length > 3){
@@ -98,6 +101,7 @@
 					.then((data)=>{
 						console.log(data);
 						if(data.length > 0){
+							document.getElementById('uid').value = data[0].id;
 							document.getElementById('searchUsername').value = data[0].username;
 							document.getElementById('searchEmail').value = data[0].email;
 							document.getElementById('searchPassword').value = data[0].password;
@@ -107,18 +111,17 @@
 								document.getElementById('searchLastName').value = details.last_name;
 							}
 						}else{
-							results.push("User not found");
+							result.innerHTML = "User not found";
 						}
 					});
 			}else{
-				results.push('Search term must be longer than 3 chars');
+				result.innerHTML = "Invalid data";
 			}
-			document.getElementById('searchResult').innerHTML = "";
-			console.log(results);
 		}
+
 		function submitCreate(){
-			console.log("Creating user");
-			let results = [];
+			let result = document.getElementById('createResult');
+			result.innerHTML = "";
 			let username = document.getElementById('username').value;
 			let email = document.getElementById('email').value;
 			let password = document.getElementById('password').value;
@@ -131,15 +134,39 @@
 					.then(data=>data.json())
 					.then((data)=>{
 						console.log(data);
-						results.push(data);
+						if(data.result){
+							result.innerHTML = "Done";
+						}else{
+							result.innerHTML = "Failed to create user";
+						}
 					});
 			}else{
-				results.push('Values must be londer than 3 chars');
+				result.innerHTML = "Invalid data";
 			}
-			document.getElementById('createResult').innerHTML = "";
-			for(let i = 0; i < results.length; i++){
-				document.getElementById('createResult').innerHTML += '<br />'+results[i];
-			};
+		}
+
+		function updateDetails(){
+			let result = document.getElementById('searchResult');
+			result.innerHTML = "";
+			let firstName = document.getElementById('searchFirstName').value;
+			let lastName = document.getElementById('searchLastName').value;
+			if((firstName > 3) && (lastName > 3)){
+				let detailsData = new FormData();
+				detailsData.append('uid', document.getElementById('uid').value);
+				detailsData.append('firstName', document.getElementById('searchFirstName'));
+				detailsData.append('lastName', document.getElementById('searchLastName'));
+				fetch("updateUserDetails", {method:"POST", body: detailsData})
+					.then(data=>data.json())
+					.then((data)=>{
+						if(data.status !== "OK"){
+							result.innerHTML = "Updated";
+						}else{
+							result.innerHTML = "FAIL";
+						};
+					})
+			}else{
+				result.innerHTML = "Invalid data";
+			}
 		}
 	</script>
 </body>
