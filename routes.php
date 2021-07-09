@@ -15,6 +15,8 @@ class routes{
     ];
 
     public static $post_routes=[
-        "/" => "exampleController@postExample"
+        "/" => "exampleController@postExample",
+        "createUser" => "userController@createUser",
+        "searchUser" => "userController@searchUser"
     ];
 }

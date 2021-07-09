@@ -2,10 +2,10 @@
 
 namespace uranium\model;
 
-use uranium\core\model;
+use uranium\core\Model;
 use uranium\core\databaseDataTypes;
 
-class exampleModel extends model{
+class ExampleModel extends Model{
 
 	protected $tableName = "exampleModel";
 

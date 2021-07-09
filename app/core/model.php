@@ -18,13 +18,15 @@ class databaseDataTypes{
 	public const TEXT    = ["ID" => "TEXT", "MAX" => 2000];
 }
 
-class model extends databaseDataTypes{
+class Model extends databaseDataTypes{
 
 	public $cols = array();  	// Array of data columns
 	public $rows = array(); 	// Array of data from database
 	protected $tableName;	
 	protected $pkn;				// Primary key name
-	private	$query = ["selectors" => array()];		// Build a query
+	private $withProtected = false; 
+	private	$query = ["selectors" => array(),
+					  "relationships" => array()];		// Build a query
 
 	public function __construct(){
 		$this->setupQuery(); // Setup the default empty query
@@ -41,7 +43,9 @@ class model extends databaseDataTypes{
 		"key" => "",
 		"null" => true,
 		"auto_increment" => false,
-		"extra" => false
+		"extra" => false,
+		"unique" => false,
+		"protected" => false
 	];
 	
 	/**
@@ -50,7 +54,7 @@ class model extends databaseDataTypes{
 	 * 
 	 * @param String - Name of the primary key
 	 */
-	protected function addPrimary(String $name){
+	protected function addPrimary(String $name): void{
 		$this->pkn = $name;
 		$this->cols[] = [
 			"name"=> $name,
@@ -59,8 +63,19 @@ class model extends databaseDataTypes{
 			"length" => 10,
 			"extra" => "AUTO_INCREMENT",
 			"null" => false,
-			"default" => NULL
+			"default" => NULL,
+			"unique" => true,
+			"protected" => false
 		];
+	}
+
+	/**
+	 * setup the default empty query
+	 * (put here in case of change later on)
+	 */
+	private function setupQuery(): void{
+		$this->query = ["selectors" => array(),
+					  "relationships" => array()];
 	}
 	
 	/**
@@ -70,7 +85,7 @@ class model extends databaseDataTypes{
 	 * @param String - name of col
 	 * @param Array  - array of col options
 	 */
-	protected function addCol(string $name, array $options){
+	protected function addCol(string $name, array $options): void{
 		$newcol = $this->colOptions;
 		$newcol["name"] = $name;
 		foreach($this->colOptions as $key=>$option){
@@ -86,10 +101,9 @@ class model extends databaseDataTypes{
 	 * 
 	 * @param String - column name to filter
 	 * @param String - value to filter
-	 * 
 	 * @return model object
 	 */
-	public function where(String $key, String $value){
+	public function where(String $key, String $value): Model{
 		$this->query["selectors"][] = ["key" => $key, "value" => $value]; 
 		return $this;
 	}
@@ -98,23 +112,67 @@ class model extends databaseDataTypes{
 	 * add a limit to ammount of rows to fetch
 	 * 
 	 * @param Int limit to rows
-	 * 
 	 * @return model object
 	 */
-	public function limit(Int $limit){
+	public function limit(Int $limit): Model{
 		$this->query["limit"] = $limit;
+		return $this;
+	}
+
+	private function setupRelationship($className, $foreignKey, $localKey): array{
+		$defaultForeignKey = $this->tableName."_id";
+		$class = new $className();
+		$newRelationship = [
+			"class"			=> new $className(),
+			"localKey" 		=> ($localKey!=null)?$localKey:$this->pkn,
+			"foreignKey"	=> ($foreignKey!=null)?$foreignKey:$defaultForeignKey
+		];
+		return $newRelationship;
+	}
+
+	/**
+	 * Add a one-to-one relationship
+	 * @param string modelname
+	 * @return Model - this
+	 */
+	public function hasOne(String $className, String $foreignKey=null, String $localKey=null): void{
+		$newRelationship = $this->setupRelationship($className, $foreignKey, $localKey);
+		$newRelationship["class"]->limit(1);
+		$this->query["relationships"][] = $newRelationship; 
+	}
+
+	public function hasMany(String $className, String $foreignKey=null, String $localKey=null): void{
+		$newRelationship = $this->setupRelationship($className, $foreignKey, $localKey);
+		$this->query["relationships"][] = $newRelationship; 
+	}
+
+	public function with(String $relationshipName){
+		$this->$relationshipName(); //?
+		return $this;
+	}
+
+	public function withProtected(){
+		$this->withProtected = true;
 		return $this;
 	}
 
 	/**
 	 * Fetch item in database
 	 * 
-	 * @return Bool status
+	 * @return mixed
 	 */
-	public function get(){
+	public function get(): array{
 		$tableName = $this->tableName;
 		$database = db::getInstance();
-		$sql = "SELECT * FROM $tableName";
+		$sql = "SELECT ";
+		$cols = $this->getFieldNames();
+		foreach($cols as $key=>$col){
+			$sql .= $col;
+			if(($key+1) != count($cols)){
+				$sql.=", ";
+			};
+		};
+		$sql .= " FROM $tableName";
 		if(count($this->query["selectors"]) > 0){
 			$sql .= " WHERE ";
 			foreach($this->query["selectors"] as $key=>$selector){
@@ -127,11 +185,16 @@ class model extends databaseDataTypes{
 			$sql .= " LIMIT ".$this->query["limit"];
 		}
 		$query = $database->prepare($sql);
-
-		// Reset query selectors for next time
-		$this->query = ["selectors" => []];
 		if($query->execute()){
 			while($row = $query->fetch(PDO::FETCH_ASSOC)){
+				// Get relationships
+				if(count($this->query["relationships"]) > 0){
+					foreach($this->query["relationships"] as $r){
+						$relationshipModel = $r["class"];
+						$results = $relationshipModel->where($r["foreignKey"], $row[$r["localKey"]])->get();
+						$row[$relationshipModel->tableName] = $results;
+					}
+				}
 				$this->rows[] = $row;
 			}
 			return $this->rows;
@@ -140,12 +203,14 @@ class model extends databaseDataTypes{
 		};
 	}
 
-	/**
-	 * setup the default empty query
-	 * (put here in case of change later on)
-	 */
-	private function setupQuery(){
-		$this->query = ["selectors" => []];
+	private function getFieldNames(){
+		$cols = array();
+		foreach($this->cols as $col){
+			if($this->withProtected || !$col["protected"]){
+				$cols[] = $col["name"];
+			}
+		}
+		return $cols;
 	}
  
  	/**
@@ -153,9 +218,9 @@ class model extends databaseDataTypes{
  	 * 
  	 * @return Bool status
  	 */
-	public function save(){
+	public function save(): bool{
 		if(count($this->rows) <= 0){
-			return;
+			return true;
 		};
 		$pkn = $this->pkn;
 		$tableName = $this->tableName;
@@ -164,7 +229,6 @@ class model extends databaseDataTypes{
 		foreach($this->rows as $row){
 			$template = "";
 			if(array_key_exists($pkn, $row)){
-				// pk is set and exists in db
 				$template = "UPDATE `$tableName` SET ";
 				foreach($this->cols as $col){
 					if(array_key_exists($col["name"], $row)){
@@ -209,7 +273,7 @@ class model extends databaseDataTypes{
 	 * 
 	 * @return Bool status
 	 */
-	public function create(){
+	public function create(): bool{
 		$tableName = $this->tableName;
 		$template = "CREATE TABLE $tableName(";
 		$pkName = "";
@@ -231,6 +295,9 @@ class model extends databaseDataTypes{
 			if(strlen($extra) > 0){
 				$template .= " $extra ";
 			}
+			if($col["unique"]){
+				$template .= " UNIQUE "; 
+			}
 			$template .= ',';
 		}
 		$template .= "PRIMARY KEY(".$pkName.")";
@@ -246,11 +313,10 @@ class model extends databaseDataTypes{
 
 	/**
 	 * Checks if database table exists
-	 * XXX: TODO: Doesn't catch error. Needs fixing
 	 * 
 	 * @return Boolean 
 	 */
-	public function exists(){
+	public function exists(): bool{
 		$database = db::getInstance();
 		$query = $database->prepare("DESCRIBE ".$this->tableName);
 		try{
@@ -267,7 +333,7 @@ class model extends databaseDataTypes{
 	 * 
 	 * @return Boolean
 	 */
-	public function drop(){
+	public function drop(): bool{
 		$database = db::getInstance();
 		$tableName = $this->tableName;
 		$sql = "DROP TABLE IF EXISTS `$tableName`;";
@@ -284,7 +350,7 @@ class model extends databaseDataTypes{
 	 *
 	 * @return Mixed
 	 */
-	public function getFields(){
+	public function getFields(): mixed{
 		$database = db::getInstance();
 		$tableName = $this->tableName;
 		$query = $database->prepare("SHOW COLUMNS FROM $tableName;");

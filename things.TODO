@@ -1,10 +1,12 @@
 Model:
   ☐ Realationships
-    ☐ One to One 
+    ✔ One to One @done (21-07-07 04:05)
     ☐ One to Many
     ☐ Many to One
+    ☐ Save modified relationship
   ☐ Add all data types
   ✔ Add filtering options to get @done (21-06-10 16:00)
+  ☐ Add protected/hidden items
   ☐ Add datatype validation checking to avoid errors
     ☐ Check max length
     ☐ Check correct data type inputted

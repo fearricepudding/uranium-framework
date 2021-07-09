@@ -2,33 +2,37 @@
 
 namespace uranium\model;
 
-use uranium\core\model;
-use uranium\core\databaseDataTypes;
+use uranium\core\Model;
+use uranium\core\databaseDataTypes as type;
+use uranium\model\UserDetailsModel;
 
-class userModel extends model{
+class UserModel extends Model{
 
-	protected $tableName = "users";
+	protected $tableName = "user";
 
 	public function __construct(){
 
 		$this->addPrimary("id");
 		$this->addCol("username",[
-			"type" 	 => databaseDataTypes::VARCHAR,
+			"type" 	 => type::VARCHAR,
 			"length" => 21,
-			"null"   => false
+			"null"   => false,
+			"unique" => true
 		]);
 		$this->addCol("email", [
-			"type" 	 => databaseDataTypes::VARCHAR,
+			"type" 	 => type::VARCHAR,
 			"length" => 50,
-			"null"	 => false
+			"null"	 => false,
+			"unique" => true
 		]);
 		$this->addCol("password", [
-			"type"	 => databaseDataTypes::VARCHAR, 
+			"type"	 => type::VARCHAR, 
 			"length" => 72,
-			"null"   => false
+			"null"   => false,
+			"protected" => true
 		]); 
-
-
-		$this->addRelationship("tableName", "localID", "foreignID")
 	}	
+	public function userDetails(){
+		$this->hasOne(UserDetailsModel::class);
+	}
 }
