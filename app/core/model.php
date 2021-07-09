@@ -51,8 +51,8 @@ class Model extends databaseDataTypes{
 	/**
 	 * Adds an auto incrementing primary key
 	 * 		with specified name
-	 * 
 	 * @param String - Name of the primary key
+	 * @return void
 	 */
 	protected function addPrimary(String $name): void{
 		$this->pkn = $name;
@@ -72,6 +72,7 @@ class Model extends databaseDataTypes{
 	/**
 	 * setup the default empty query
 	 * (put here in case of change later on)
+	 * @return void
 	 */
 	private function setupQuery(): void{
 		$this->query = ["selectors" => array(),
@@ -81,9 +82,9 @@ class Model extends databaseDataTypes{
 	/**
 	 * Add a data column to the table
 	 * 		values are specified by colOptions
-	 * 
 	 * @param String - name of col
 	 * @param Array  - array of col options
+	 * @return void
 	 */
 	protected function addCol(string $name, array $options): void{
 		$newcol = $this->colOptions;
@@ -98,7 +99,6 @@ class Model extends databaseDataTypes{
 
 	/**
 	 * Add where selector to query
-	 * 
 	 * @param String - column name to filter
 	 * @param String - value to filter
 	 * @return model object
@@ -110,7 +110,6 @@ class Model extends databaseDataTypes{
 
 	/**
 	 * add a limit to ammount of rows to fetch
-	 * 
 	 * @param Int limit to rows
 	 * @return model object
 	 */
@@ -119,6 +118,13 @@ class Model extends databaseDataTypes{
 		return $this;
 	}
 
+	/**
+	 * Setup the default relationship array
+	 * @param String name of class
+	 * @param String name of foreign key
+	 * @param Strin gname of local key
+	 * @return array
+	 */
 	private function setupRelationship($className, $foreignKey, $localKey): array{
 		$defaultForeignKey = $this->tableName."_id";
 		$class = new $className();
@@ -132,8 +138,10 @@ class Model extends databaseDataTypes{
 
 	/**
 	 * Add a one-to-one relationship
-	 * @param string modelname
-	 * @return Model - this
+	 * @param String full class name with namespace
+	 * @param String name of foreign key
+	 * @param String name of local key
+	 * @return void
 	 */
 	public function hasOne(String $className, String $foreignKey=null, String $localKey=null): void{
 		$newRelationship = $this->setupRelationship($className, $foreignKey, $localKey);
@@ -141,31 +149,50 @@ class Model extends databaseDataTypes{
 		$this->query["relationships"][] = $newRelationship; 
 	}
 
+	/**
+	 * Add a one-to-many relationship
+	 * @param String full class name with namespace
+	 * @param String name of foreign column
+	 * @param String name of local key
+	 * @return void
+	 */
 	public function hasMany(String $className, String $foreignKey=null, String $localKey=null): void{
 		$newRelationship = $this->setupRelationship($className, $foreignKey, $localKey);
 		$this->query["relationships"][] = $newRelationship; 
-	}
+	}  
 
-	public function with(String $relationshipName){
-		$this->$relationshipName(); //?
+	/**
+	 * Include relationship with get reponse
+	 * @param String name of the relationship method inside the model
+	 * @return Model $this
+	 */ 
+	public function with(String $relationshipName): Model{
+		try{
+			$this->$relationshipName();
+		}catch(Exception $e){
+			error_log("Specified relationship not found");
+		}
 		return $this;
 	}
 
-	public function withProtected(){
+	/**
+	 * Include the protected data in the response
+	 * @return Model $this
+	 */
+	public function withProtected(): Model{
 		$this->withProtected = true;
 		return $this;
 	}
 
 	/**
 	 * Fetch item in database
-	 * 
 	 * @return mixed
 	 */
 	public function get(): array{
 		$tableName = $this->tableName;
 		$database = db::getInstance();
 		$sql = "SELECT ";
-		$cols = $this->getFieldNames();
+		$cols = $this->getColumnNames();
 		foreach($cols as $key=>$col){
 			$sql .= $col;
 			if(($key+1) != count($cols)){
@@ -203,7 +230,11 @@ class Model extends databaseDataTypes{
 		};
 	}
 
-	private function getFieldNames(){
+	/**
+	 * Get the names of the columns
+	 * @return array
+	 */
+	private function getColumnNames(): array{
 		$cols = array();
 		foreach($this->cols as $col){
 			if($this->withProtected || !$col["protected"]){
@@ -215,7 +246,6 @@ class Model extends databaseDataTypes{
  
  	/**
  	 * Save new data in rows to database
- 	 * 
  	 * @return Bool status
  	 */
 	public function save(): bool{
@@ -270,7 +300,6 @@ class Model extends databaseDataTypes{
 	
 	/**
 	 * Crete the table in the database
-	 * 
 	 * @return Bool status
 	 */
 	public function create(): bool{
@@ -313,7 +342,6 @@ class Model extends databaseDataTypes{
 
 	/**
 	 * Checks if database table exists
-	 * 
 	 * @return Boolean 
 	 */
 	public function exists(): bool{
@@ -330,7 +358,6 @@ class Model extends databaseDataTypes{
 
 	/**
 	 * Drop table
-	 * 
 	 * @return Boolean
 	 */
 	public function drop(): bool{
@@ -347,10 +374,9 @@ class Model extends databaseDataTypes{
 
 	/**
 	 * Get tables fields from the database
-	 *
 	 * @return Mixed
 	 */
-	public function getFields(): mixed{
+	public function getExistingColumns(): mixed{
 		$database = db::getInstance();
 		$tableName = $this->tableName;
 		$query = $database->prepare("SHOW COLUMNS FROM $tableName;");

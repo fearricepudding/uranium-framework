@@ -9,6 +9,5 @@ class testing{
 		echo cliColour::YELLOW."Testing".PHP_EOL;
 		echo cliColour::RESET;
 		echo "Test".PHP_EOL;
-
 	}
 }

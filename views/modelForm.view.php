@@ -36,11 +36,13 @@
 	<div class="section search">
 		<div class="bar">
 			<label for="searchfield">Search for a user</label><br />
-			<input type="text" id="searchField" /><button onClick="submitSearch()">Search</button>
+			<input type="text" id="searchField" /><br />
+			<input type="checkbox" id="includeDetails" checked/> Include user details<br />
+			<button onClick="submitSearch()">Search</button>
 		</div>
 		<div>
-			<h5>Result</h5>
 			<div>
+				<h5>User</h5>
 				<div>
 					<label>Username</label><br />
 					<input type="text" id="searchUsername" />
@@ -53,10 +55,22 @@
 					<label>Password</label><br />
 					<input type="text" id="searchPassword" />
 				</div>
+			</div>
+			<div>
+				<h5>User Details</h5>
 				<div>
-					<button>Update</button>
+					<label>First name</label><br />
+					<input type="text" id="searchFirstName" />
+				</div>
+				<div>
+					<label>Last name</label><br />
+					<input type="text" id="searchLastName" />
 				</div>
 			</div>
+			<div>
+				<button>Update</button>
+			</div>
+			<h5>Response</h5>
 			<div id="searchResult">
 				Ready.
 			</div>
@@ -66,9 +80,11 @@
 		function submitSearch(){
 			let results = [];
 			let term = document.getElementById('searchField').value;
+			let includeDetails = document.getElementById('includeDetails').checked;
 			if(term.length > 3){
 				let searchData = new FormData();
 				searchData.append("search", term);
+				searchData.append("includeDetails", includeDetails);
 				fetch("searchUser", {method:'POST', body: searchData})
 					.then(data=>data.json())
 					.then((data)=>{

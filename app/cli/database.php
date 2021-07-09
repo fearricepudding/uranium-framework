@@ -43,7 +43,7 @@ class database{
 		$tableResult = [];
 		foreach($modelList as $model){
 			$modelObj = new $model();
-			$databaseFields = $modelObj->getFields();
+			$databaseFields = $modelObj->getExistingColumns();
 			$tableResult[$model] = [];
 			foreach($modelObj->cols as $a){
 				$report = [];

@@ -9,10 +9,16 @@ class userController{
 		$model = new UserModel();
 		$result = array();
 		if($model->exists()){
-			$result = $model->where("username", $_POST['search'])
+			if($_POST['includeDetails'] === "true"){
+				$result = $model->where("username", $_POST['search'])
 							->with("userDetails")
-						//	->withProtected()
+							->withProtected()
 							->get();
+			}else{
+				$result = $model->where("username", $_POST['search'])
+							->withProtected()
+							->get();
+			}
 		}
 		echo json_encode($result);
 	}
