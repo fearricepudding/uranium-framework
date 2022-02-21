@@ -7,24 +7,24 @@ use uranium\core\databaseDataTypes;
 
 class ExampleModel extends Model{
 
-	protected $tableName = "exampleModel";
+    protected $tableName = "exampleModel";
 
-	public function __construct(){
+    public function __construct(){
 
-		$this->addPrimary("id"); 
-		$this->addCol("name", [
-			"type" 	 => databaseDataTypes::VARCHAR,
-			"length" => 20,
-			"null" => false
-		]);
-		$this->addCol("test", [
-			"type" => databaseDataTypes::VARCHAR,
-			"null" => false,
-			"default" => "Something"
-		]);
-		$this->addCol("userid", [
-			"type" => databaseDataTypes::INTEGER,
-			"null" => false
-		]);
-	}	
+        $this->addPrimary("id"); 
+        $this->addCol("name", [
+            "type" 	 => databaseDataTypes::VARCHAR,
+            "length" => 20,
+            "null" => false
+        ]);
+        $this->addCol("test", [
+            "type" => databaseDataTypes::VARCHAR,
+            "null" => false,
+            "default" => "Something"
+        ]);
+        $this->addCol("userid", [
+            "type" => databaseDataTypes::INTEGER,
+            "null" => false
+        ]);
+    }	
 }

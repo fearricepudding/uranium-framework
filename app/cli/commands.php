@@ -3,8 +3,7 @@
 namespace uranium\cli;
 
 class commands{
-
-	public static function list(){
-		
-	}
+    public static function list(){
+        
+    }
 }

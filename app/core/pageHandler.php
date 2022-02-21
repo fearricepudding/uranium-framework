@@ -21,10 +21,10 @@ class pageHandler{
         }
     }
 
-	public static function redirect($location){
-		header("Location: ".$location);
-		exit();
-	}
+    public static function redirect($location){
+        header("Location: ".$location);
+        exit();
+    }
    
     public static function render($PAGEDATA){
         echo $PAGEDATA;

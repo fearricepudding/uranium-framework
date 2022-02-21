@@ -8,15 +8,16 @@
 class routes{
     public static $get_routes=[
         "/" => "exampleController@modelExample",
-    	"/user" => "exampleController@userexample",
-		"/test/{item_test}" => "exampleController@variableExample",
-		"/test/{item_test}/test" => "exampleController@variableExtension",
-		"/test/{item_test}/test/{seconditem}" => "exampleController@twoVariables"
+        "/user" => "exampleController@userexample",
+        "/test/{item_test}" => "exampleController@variableExample",
+        "/test/{item_test}/test" => "exampleController@variableExtension",
+        "/test/{item_test}/test/{seconditem}" => "exampleController@twoVariables"
     ];
 
     public static $post_routes=[
         "/" => "exampleController@postExample",
         "createUser" => "userController@createUser",
-        "searchUser" => "userController@searchUser"
+        "searchUser" => "userController@searchUser",
+        "updateUser" => "userController@updateUser"
     ];
 }
