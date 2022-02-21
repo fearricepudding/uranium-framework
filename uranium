@@ -5,8 +5,8 @@ require __DIR__."/app/app.php";
 use uranium\cli\cliCommandHandler;
 
 try{
-	$cmdHandler = new cliCommandHandler($argv);
+    $cmdHandler = new cliCommandHandler($argv);
 }catch(Ecception $e){
-	echo $e;
+    echo $e;
 }
 
