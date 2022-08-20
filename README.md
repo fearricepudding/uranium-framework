@@ -1,3 +1,1 @@
-# Uranium Framework
-
-The Uranium Framework is a tiny PHP MVC - Template - Router Framework
+# This project has been moved to https://github.com/InitialDev/uranium-framework
