@@ -1,8 +1,13 @@
 <?php
 
-require __DIR__."/app/app.php";
+use uranium\ScriptLoader;
 
-use uranium\cli\cliCommandHandler;
+require __DIR__."/app/app.php";
+use uranium\core\cli\cliCommandHandler;
+ScriptLoader::folder(__DIR__."/app/core");
+ScriptLoader::folder(__DIR__."/models");
+ScriptLoader::folder(__DIR__."/app/seeder");
+ScriptLoader::folder(__DIR__."/app/cli");
 
 try{
     $cmdHandler = new cliCommandHandler($argv);

@@ -1,0 +1,23 @@
+{
+    "name": "initialdev/uranium-framework",
+    "description": "Uranium PHP Framework",
+    "license": "proprietary",
+    "type": "project",
+    "autoload": {
+        "classmap": [
+            "app/uranium/"
+        ]
+    },
+    "scripts": {
+        "test": "./vendor/bin/phpunit tests/"
+    },
+    "authors": [
+        {
+            "name": "FEARricepudding",
+            "email": "jordanrandles@googlemail.com"
+        }
+    ],
+    "require-dev": {
+        "phpunit/phpunit": "^9.5"
+    }
+}

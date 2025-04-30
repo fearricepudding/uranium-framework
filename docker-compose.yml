@@ -1,0 +1,29 @@
+version: "3"
+services:
+  app:
+    container_name: uranium
+    build: .
+    ports:
+      - "8080:80"
+    links:
+      - "db:database"
+    depends_on:
+      - db
+    volumes:
+      - ./:/app
+  db:
+    container_name: uraniumDB
+    image: "mysql"
+    volumes:
+      - ./database:/var/lib/mysql
+    ports:
+      - "6033:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: uran1um
+      MYSQL_DATABASE: uranium
+  cache:
+    container_name: uraniumCache
+    image: 'memcached'
+    ports:
+      - "11211:11211"
+    restart: always
