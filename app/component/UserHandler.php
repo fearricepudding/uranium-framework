@@ -22,7 +22,7 @@ class UserHandler{
         return false;
     }
 
-    public static function getAuthenticatedUser(): User{
+    public static function getAuthenticatedUser(): Mixed{
         if(!self::isAuthenticated()){
             return false;
         }

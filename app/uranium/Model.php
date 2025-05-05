@@ -12,7 +12,7 @@ class DatabaseDataTypes{
     public const TEXT       = ["ID" => "TEXT", "MAX" => 2000];
     public const MEDIUMTEXT = ["ID" => "MEDIUMTEXT"];
     public const LONGTEXT   = ["ID" => "LONGTEXT"];
-	public const FLOAT      = ["ID" => "FLOAT", "MAX" => 64, "LENGTH" => 8];
+    public const FLOAT      = ["ID" => "FLOAT", "MAX" => 64, "LENGTH" => 8];
 	public const TIMESTAMP  = ["ID" => "TIMESTAMP", "DEFAULT" => "CURRENT_TIMESTAMP", "LENGTH" => 6];
 }
 
@@ -26,8 +26,12 @@ class Model extends DatabaseDataTypes{
     protected $pkn;				// Primary key name
     protected $allowCache = false;
     private $withProtected = false; 
-    private	$query = ["selectors" => array(),
-                      "relationships" => array()];		// Build a query
+    private $definedColumns = false;
+    private	$query = [
+        "selectors" => array(),
+        "relationships" => array(),
+        "columns" => array()
+    ];		// Build a query
 
     public function __construct(){
         $this->setupQuery(); // Setup the default empty query
@@ -47,6 +51,10 @@ class Model extends DatabaseDataTypes{
         "unique" => false,
         "protected" => false
     ];
+
+    public function setPrimaryKey(String $name) {
+        $this->pkn = $name;
+    }
     
     /**
      * Adds an auto incrementing primary key
@@ -75,8 +83,11 @@ class Model extends DatabaseDataTypes{
      * @return void
      */
     private function setupQuery(): void{
-        $this->query = ["selectors" => array(),
-                      "relationships" => array()];
+        $this->query = [
+            "selectors" => array(),
+            "relationships" => array(),
+            "columns" => array()
+        ];
     }
     
     /**
@@ -95,6 +106,12 @@ class Model extends DatabaseDataTypes{
             }
         }
         $this->cols[] = $newcol;
+    }
+
+    public function select(String $column): Model{
+        $this->definedColumns = true;
+        $this->query["columns"][] = $column;
+        return $this;
     }
 
     /**
@@ -225,7 +242,7 @@ class Model extends DatabaseDataTypes{
         if($rows == null) {
             $rows = $this->fetchFromDatabase();
         };
-        $this->rows[] = $rows;
+        $this->rows = $rows;
         return $this;
     }
 
@@ -275,7 +292,7 @@ class Model extends DatabaseDataTypes{
         $tableName = $this->tableName;
         $sql = "SELECT ";
         $cols = $this->getColumnNames();
-        $responseRows = null;
+        $responseRows = array();
         $wheres = [];
         foreach($cols as $key=>$col){
             $sql .= "`".$col."`";
@@ -307,7 +324,7 @@ class Model extends DatabaseDataTypes{
                                 $row[$relationshipModel->tableName] = $results;
                             };
                         };
-                        $responseRows = $row;
+                        $responseRows[] = $row;
                     };
                 };
             }catch(PDOException $e){
@@ -359,6 +376,9 @@ class Model extends DatabaseDataTypes{
      * @return array
      */
     private function getColumnNames(): array{
+        if ($this->definedColumns) {
+            return $this->query["columns"];
+        }
         $cols = array();
         foreach($this->cols as $col){
             if($this->withProtected || !$col["protected"]){
@@ -443,7 +463,7 @@ class Model extends DatabaseDataTypes{
     public function create(): bool{
         $tableName = $this->tableName;
         $template = "CREATE TABLE `$tableName`(";
-        $pkName = "";
+        $pkName = $this->pkn;
         foreach($this->cols as $col){
             if($col["key"] === "PRI"){
                 $pkName = $col["name"];
