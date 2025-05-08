@@ -7,20 +7,23 @@ use uranium\core\pageHandler;
 
 class Router{
 
-    public static function init(){
-        $route = self::getRoute();
+    private $routeList;
+    private $routeRegister;
+
+    public function init(){
+        $this->routeRegister = new routes();
+        $this->routeList = $this->routeRegister->getRegister();
+        $route = $this->getRoute();
         if($route){
-            self::loadRoute($route["route"], $route['variables']);
+            $this->loadRoute($route["route"], $route['variables']);
         }else{
             error_log("[*] Router: Route not found");
             PageHandler::view("error_pages/404");
         }
     }
 
-    private static function getRouteList(){
-        $routeRegister = new routes();
-        $routes = $routeRegister->getRegister();
-
+    private function getRouteList(){
+        $routes = $this->routeList;
         $method = $_SERVER["REQUEST_METHOD"];
         if(array_key_exists($method, $routes)){
             return $routes[$method];
@@ -28,7 +31,7 @@ class Router{
         return [];
     }
 
-    private static function getRoute(){
+    private function getRoute(){
         $URI = $_SERVER['REQUEST_URI'];
         $PATH = explode("?", $URI)[0];
         $URIComps = explode("/", $PATH);
@@ -36,11 +39,11 @@ class Router{
             $URIComps = array_slice($URIComps, 1); // Remove first empty item
         };
         $compSize = count($URIComps);
-        $matches = self::getRouteList();
+        $matches = $this->getRouteList();
         $variables = [];
         $level = 0; 
         foreach($URIComps as $URIComp){
-            foreach(self::getRouteList() as $routePath=>$route){
+            foreach($this->getRouteList() as $routePath=>$route){
                 $routeComps = explode("/", $routePath); 
                 if($routeComps[0] == ""){
                     $routeComps = array_slice($routeComps, 1); // Remove empty array item
@@ -72,7 +75,7 @@ class Router{
         };
     }
 
-    private static function loadRoute($route, $variables=[]){
+    private function loadRoute($route, $variables=[]){
         if($route->hasMiddleware()){
             foreach($route->middleware as $middlewareClassString){
                 $middlewareClass = new $middlewareClassString();

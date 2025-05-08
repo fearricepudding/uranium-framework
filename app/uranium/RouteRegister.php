@@ -32,6 +32,17 @@ class RouteRegister{
         $this->routes[$route->getMethod()][$route->getRoute()] = $route;
     }
 
+    protected function group(Array $routeGroup, Array $middleWare) {
+        foreach($routeGroup as $route) {
+            if ($middleWare != NULL) {
+                foreach ($middleWare as $mw) {
+                    $route->middleware($mw);
+                }
+            }
+            $this->routes[$route->getMethod()][$route->getRoute()] = $route;
+        }
+    }
+
     public function getRegister(){
         return $this->routes;
     }
