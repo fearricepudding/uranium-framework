@@ -409,7 +409,6 @@ class Model extends DatabaseDataTypes{
                     if(array_key_exists($col["name"], $row)){
                         $currentKey = $col["name"];
                         $currentValue = $row[$col["name"]];
-
                         if($col["type"]["ID"] == "TIMESTAMP" ){
                             $template .= "`$currentKey`=CURRENT_TIMESTAMP,";
                         }else{
