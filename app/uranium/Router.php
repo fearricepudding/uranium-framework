@@ -4,6 +4,7 @@ namespace uranium\core;
 use uranium\core\routes;
 use uranium\controller;
 use uranium\core\pageHandler;
+use uranium\utils\Response;
 
 class Router{
 
@@ -18,7 +19,9 @@ class Router{
             $this->loadRoute($route["route"], $route['variables']);
         }else{
             error_log("[*] Router: Route not found");
-            PageHandler::view("error_pages/404");
+            echo Response::ERR(400, "API route not found");
+            exit();
+//            PageHandler::view("error_pages/404");
         }
     }
 

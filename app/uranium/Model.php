@@ -55,7 +55,7 @@ class Model extends DatabaseDataTypes{
     public function setPrimaryKey(String $name) {
         $this->pkn = $name;
     }
-    
+
     /**
      * Adds an auto incrementing primary key
      * 		with specified name
@@ -108,9 +108,29 @@ class Model extends DatabaseDataTypes{
         $this->cols[] = $newcol;
     }
 
-    public function select(String $column): Model{
+    public function select(Mixed $value) {
+        if (gettype($value) == "string") {
+            return $this->select_string($value);
+        } else if (gettype($value) == "array") {
+            return $this->select_array($value);
+        }
+        error_log("Could not assign column selectors: ".$value);
+        return $this;
+    }
+
+    public function select_string(String $column): Model{
         $this->definedColumns = true;
         $this->query["columns"][] = $column;
+        return $this;
+    }
+
+    public function select_array(Array $columns ) :Model{
+        $this->definedColumns = true;
+        foreach ($columns as $col) {
+            // validate the columns 
+        }
+
+        $this->query["columns"] = $columns;
         return $this;
     }
 
@@ -165,6 +185,16 @@ class Model extends DatabaseDataTypes{
      */
     public function limit(int $limit): Model{
         $this->query["limit"] = $limit;
+        return $this;
+    }
+
+    /** 
+     * Set an offset for the querty (only available with limit set)
+     * @param int offset amount
+     * @return Model this
+     */
+    public function offset(int $offset): Model{
+        $this->query["offset"] = $offset;
         return $this;
     }
 
@@ -306,9 +336,14 @@ class Model extends DatabaseDataTypes{
         $wheres = $selectorBuild["variables"];
         $sql .= $selectorBuild["sql"];
 
-        if(key_exists("limit", $this->query)){
+        if (key_exists("limit", $this->query)) {
             $sql .= " LIMIT ".$this->query["limit"];
-        };
+
+            if (key_exists("offset", $this->query)) {
+                $sql .= " OFFSET ".$this->query["offset"];
+            }
+        }
+
         if(!$this->test){
             $database = Database::getInstance();
             $query = $database->prepare($sql);
@@ -332,6 +367,7 @@ class Model extends DatabaseDataTypes{
             }
             return $responseRows;
         }else{
+            error_log($sql);
             return $sql;
         };
     }
@@ -409,6 +445,7 @@ class Model extends DatabaseDataTypes{
                     if(array_key_exists($col["name"], $row)){
                         $currentKey = $col["name"];
                         $currentValue = $row[$col["name"]];
+
                         if($col["type"]["ID"] == "TIMESTAMP" ){
                             $template .= "`$currentKey`=CURRENT_TIMESTAMP,";
                         }else{

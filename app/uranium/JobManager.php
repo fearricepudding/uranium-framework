@@ -11,6 +11,7 @@ class JobManager{
         $jobs = self::getjobs();
         foreach($jobs as $job){
             $componentName = $job["component"];
+            echo "Running ".$componentName.PHP_EOL;
             self::runComponent($componentName);
             if($job["reschedule"] == 1){
                 self::rescheduleJob($job);
