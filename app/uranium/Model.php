@@ -223,7 +223,7 @@ class Model extends DatabaseDataTypes{
      * @param String name of local key
      * @return void
      */
-    public function hasOne(String $className, String $foreignKey=null, String $localKey=null): void{
+    public function hasOne(String $className, String $foreignKey, String $localKey): void{
         $newRelationship = $this->setupRelationship($className, $foreignKey, $localKey);
         $newRelationship["class"]->limit(1);
         $this->query["relationships"][] = $newRelationship; 
@@ -236,7 +236,7 @@ class Model extends DatabaseDataTypes{
      * @param String name of local key
      * @return void
      */
-    public function hasMany(String $className, String $foreignKey=null, String $localKey=null): void{
+    public function hasMany(String $className, String $foreignKey, String $localKey): void{
         $newRelationship = $this->setupRelationship($className, $foreignKey, $localKey);
         $this->query["relationships"][] = $newRelationship; 
     }  
