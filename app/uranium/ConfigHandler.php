@@ -36,7 +36,8 @@ class ConfigHandler{
 
     private function getFileContent($path): string{
         if(!file_exists($path)){
-            throw new \Exception(".env does not exist");
+            echo "Please create a .env file. An example can be found in the root directory as .env.example";
+            exit();
         }
         $content = file_get_contents($path);
         if($content === false){

@@ -1,11 +1,11 @@
 <?php
 
+namespace uranium\controller;
+
 use uranium\core\PageHandler;
 
 class PageController{
-    public static function login(){
-        
-        var_dump($_CONFIG["test"]);
-    
+    public static function index(){
+        PageHandler::view("example");
     }
 }
